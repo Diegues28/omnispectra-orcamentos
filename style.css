@@ -41,3 +41,5 @@
 .omniEditable:focus{border-color:#64c8ff}.omniExtraPhoto img,.omniProductPreview{max-width:100%;max-height:240px;object-fit:contain;border-radius:8px;margin-top:12px}
 @media(max-width:600px){.omniVisualItem{grid-template-columns:1fr}.omniVisualPage{padding:16px}}
 @media print{.omniProjectPrintImage{width:100%;max-height:135mm;object-fit:contain;margin-top:12mm}}
+
+.omniDanger{border:1px solid #994d59!important;color:#ffb4bd!important}.omniPptCard{background:#0b2a3e;border:1px solid #2a6b8e;border-radius:12px;padding:14px;margin:12px 0}.omniPptCard b,.omniPptCard small{display:block}.omniPptCard small{color:#b1ccdc;margin-top:6px}
