@@ -26,7 +26,7 @@ function saveQuote(){let items=quoteItems.filter(x=>x.qty>0),total=omniCalc(item
 function newQuote(){editingQuote=null;quoteItems=[];quoteFinance={};go('quote')}
 function editQuote(i){editingQuote=i;view='quote';shell(quote(i));setTimeout(()=>{renderSelected();searchCatalog('');renderFinance()},0)}
 function deleteOmniQuote(i){const all=get(K.quotes),q=all[i];if(!q)return;const label=(q.number||'sem número')+' — '+(q.client||'cliente não informado');if(!confirm('Excluir definitivamente a proposta '+label+'?\n\nOs cadastros de clientes e equipamentos serão preservados.'))return;all.splice(i,1);set(K.quotes,all);render()}
-function quotes(){let q=get(K.quotes);return pageHead('Propostas','Histórico dos orçamentos criados.','＋ Nova proposta','newQuote()')+(q.length?q.map((x,i)=>'<article class="proposal"><div><span class="category">'+esc(x.number)+'</span><h3>'+esc(x.client||'Cliente não informado')+'</h3><small>'+esc(x.address||'')+' · '+x.date+'</small></div><div class="proposalActions"><strong>'+br(x.total)+'</strong><button class="editbtn" onclick="editQuote('+i+')">Editar</button><button class="editbtn" onclick="openOmniVisual('+i+')">Editar páginas 5 e 6</button><button class="editbtn" onclick="printOmniProposal('+i+')">Gerar proposta</button><button class="ghost" onclick="generateMergedPDF('+i+')">PDFs anexados</button><button class="ghost omniDanger" onclick="deleteOmniQuote('+i+')">Excluir proposta</button></div></article>').reverse().join(''):empty('Nenhuma proposta criada ainda.'))}
+function quotes(){let q=get(K.quotes);return pageHead('Propostas','Histórico dos orçamentos criados.','＋ Nova proposta','newQuote()')+(q.length?q.map((x,i)=>'<article class="proposal"><div><span class="category">'+esc(x.number)+'</span><h3>'+esc(x.client||'Cliente não informado')+'</h3><small>'+esc(x.address||'')+' · '+x.date+'</small></div><div class="proposalActions"><strong>'+br(x.total)+'</strong><button class="editbtn" onclick="editQuote('+i+')">Editar</button><button class="editbtn" onclick="openOmniVisual('+i+')">Editar páginas 5 e 6</button><button class="editbtn" onclick="exportOmniTemplateProposal('+i+')">Gerar proposta</button><button class="ghost" onclick="generateMergedPDF('+i+')">PDFs anexados</button><button class="ghost omniDanger" onclick="deleteOmniQuote('+i+')">Excluir proposta</button></div></article>').reverse().join(''):empty('Nenhuma proposta criada ainda.'))}
 async function omniAsset(id){let d=await omniFiles();return await new Promise((resolve,reject)=>{let t=d.transaction('assets','readonly'),q=t.objectStore('assets').get(id);q.onsuccess=()=>{d.close();resolve(q.result||null)};q.onerror=()=>reject(q.error)})}
 async function generateMergedPDF(i){
  let q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
@@ -89,7 +89,7 @@ async function updateOmniPPTStatus(){
 
 function proposalEditor(){
  let parts=omniDraftLoad();
- return '<div class="pagehead"><span class="eyebrow">PERSONALIZAÇÃO</span><h1>Modelo da Proposta</h1><p>Cadastre o PowerPoint original na nuvem como arquivo-mestre. Os PDFs continuam disponíveis para anexos. O navegador não converte automaticamente arquivos PPTX em PDF.</p></div><div class="panel"><h3>PowerPoint original (.pptx)</h3><p class="hint">Use o arquivo de 8 páginas como referência principal. As páginas 5 e 6 continuam editáveis no editor de propostas. O modelo é compartilhado na nuvem entre os usuários autorizados.</p><div id="omniPptStatus">Carregando modelo...</div><label class="primary" style="display:inline-block;cursor:pointer;margin:10px 8px 10px 0">Selecionar PowerPoint<input type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="display:none" onchange="saveOmniPPT(this.files[0])"></label><button class="ghost" onclick="downloadOmniPPT()">Baixar PowerPoint</button><button class="ghost omniDanger" onclick="removeOmniPPT()">Remover modelo</button></div><div class="panel"><div id="pdfEditorList">'+(parts.length?parts.map((p,i)=>'<article class="listcard" style="display:block;margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b>'+String(i+1).padStart(2,'0')+' · '+esc(p.name)+'</b><span class="category">PDF</span></div><small class="hint">'+esc(p.fileName||'Arquivo')+'</small><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><button class="ghost" onclick="viewOmniPDF('+i+')">Visualizar</button><button class="ghost" onclick="renameOmniPDF('+i+')">Editar nome</button><label class="ghost" style="cursor:pointer">Substituir<input style="display:none" type="file" accept="application/pdf" onchange="replaceOmniPDF('+i+',this.files[0])"></label><button class="ghost" onclick="moveOmniPDF('+i+',-1)">↑</button><button class="ghost" onclick="moveOmniPDF('+i+',1)">↓</button><button class="ghost" onclick="deleteOmniPDF('+i+')">Excluir</button></div></article>').join(''):'<div class="empty">Nenhum PDF cadastrado. Comece adicionando seu primeiro arquivo.</div>')+'</div><label class="primary" style="display:inline-block;cursor:pointer;margin-top:15px">＋ Adicionar PDF<input type="file" accept="application/pdf" multiple style="display:none" onchange="addOmniPDFs(this.files)"></label><button class="primary" style="margin:15px 0 0 10px" onclick="saveOmniPDFs()">Salvar arquivos</button><small class="hint">Os arquivos são armazenados neste navegador. Não estão sincronizados entre aparelhos.</small></div>'
+ return '<div class="pagehead"><span class="eyebrow">PERSONALIZAÇÃO</span><h1>Modelo da Proposta</h1><p>Cadastre o PowerPoint original na nuvem como arquivo-mestre. Os PDFs continuam disponíveis para anexos. O navegador não converte automaticamente arquivos PPTX em PDF.</p></div><div class="panel"><h3>PowerPoint original (.pptx)</h3><p class="hint">Use o arquivo de 8 páginas como referência principal. As páginas 5 e 6 continuam editáveis no editor de propostas. O modelo é compartilhado na nuvem entre os usuários autorizados.</p><div id="omniPptStatus">Carregando modelo...</div><label class="primary" style="display:inline-block;cursor:pointer;margin:10px 8px 10px 0">Selecionar PowerPoint<input type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="display:none" onchange="saveOmniPPT(this.files[0])"></label><button class="ghost" onclick="downloadOmniPPT()">Baixar PowerPoint</button><button class="ghost omniDanger" onclick="removeOmniPPT()">Remover modelo</button></div><div class="panel"><h3>Modelo visual para gerar o PDF</h3><p class="hint">Envie o PDF exportado do PowerPoint original, com 8 páginas. O aplicativo preencherá as informações e duplicará apenas as páginas 5 e 6.</p><div id="omniPdfTemplateStatus"></div><label class="primary" style="display:inline-block;cursor:pointer">Enviar PDF do modelo<input type="file" accept=".pdf,application/pdf" style="display:none" onchange="uploadOmniPDFTemplate(this.files[0])"></label></div><div class="panel"><div id="pdfEditorList">'+(parts.length?parts.map((p,i)=>'<article class="listcard" style="display:block;margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b>'+String(i+1).padStart(2,'0')+' · '+esc(p.name)+'</b><span class="category">PDF</span></div><small class="hint">'+esc(p.fileName||'Arquivo')+'</small><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><button class="ghost" onclick="viewOmniPDF('+i+')">Visualizar</button><button class="ghost" onclick="renameOmniPDF('+i+')">Editar nome</button><label class="ghost" style="cursor:pointer">Substituir<input style="display:none" type="file" accept="application/pdf" onchange="replaceOmniPDF('+i+',this.files[0])"></label><button class="ghost" onclick="moveOmniPDF('+i+',-1)">↑</button><button class="ghost" onclick="moveOmniPDF('+i+',1)">↓</button><button class="ghost" onclick="deleteOmniPDF('+i+')">Excluir</button></div></article>').join(''):'<div class="empty">Nenhum PDF cadastrado. Comece adicionando seu primeiro arquivo.</div>')+'</div><label class="primary" style="display:inline-block;cursor:pointer;margin-top:15px">＋ Adicionar PDF<input type="file" accept="application/pdf" multiple style="display:none" onchange="addOmniPDFs(this.files)"></label><button class="primary" style="margin:15px 0 0 10px" onclick="saveOmniPDFs()">Salvar arquivos</button><small class="hint">Os arquivos são armazenados neste navegador. Não estão sincronizados entre aparelhos.</small></div>'
 }
 async function omniStoreFile(key,file){let d=await omniFiles();await new Promise((resolve,reject)=>{let t=d.transaction('assets','readwrite');t.objectStore('assets').put(file,key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)});d.close()}
 async function addOmniPDFs(files){for(let file of Array.from(files||[])){if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf')){alert('Escolha arquivos PDF.');continue}let id='custom_'+Date.now()+'_'+Math.random().toString(36).slice(2);await omniStoreFile(id,file);omniDraftLoad().push({id,name:file.name.replace(/\.pdf$/i,''),fileName:file.name})}render()}
@@ -142,7 +142,7 @@ function openOmniVisual(i){visualQuoteIndex=i;view='visual';render()}
 function omniVisualEditor(){
  const q=get(K.quotes)[visualQuoteIndex];if(!q)return '<div class="empty">Proposta não encontrada.</div>';
  const items=q.items||[],extra=q.projectPages||[];
- return '<div class="pagehead"><span class="eyebrow">OMNISPECTRA · EDITOR DE PÁGINAS</span><h1>Editar páginas 5 e 6</h1><p>As páginas de equipamentos se repetem automaticamente. Acrescente quantas páginas de projeto e resumo precisar.</p></div><div class="visualTools"><button class="primary" onclick="saveOmniVisual()">Salvar páginas</button><button class="ghost" onclick="addOmniProjectPage()">＋ Página 6</button><button class="ghost" onclick="printOmniProposal('+visualQuoteIndex+')">Gerar proposta</button><button class="ghost" onclick="go(\'quotes\')">Voltar</button></div><div class="omniVisualPage"><div class="omniVisualKicker">PÁGINA 5 · EQUIPAMENTOS ORÇADOS</div><h2>Equipamentos</h2><p>'+items.length+' itens cadastrados. A paginação acontece automaticamente no documento final.</p>'+items.map(x=>'<div class="omniVisualItem">'+(x.photo?'<img src="'+esc(x.photo)+'">':'<div class="omniNoImage">Sem foto</div>')+'<div><b>'+esc(x.name)+'</b><small>'+esc(x.model||'')+'</small><p>'+esc(x.description||'')+'</p><small>Quantidade: '+(+x.qty||0)+'</small></div></div>').join('')+'</div><div class="omniVisualPage"><div class="omniVisualKicker">PÁGINA 6 · PROJETO / RESUMO</div><h2>Resumo da proposta</h2><div class="omniEditable" contenteditable="true" id="omniSummaryVisual">'+esc(q.summary||'Clique para editar o escopo e os serviços previstos.').replace(/\n/g,'<br>')+'</div></div><div id="omniProjectPages">'+extra.map((p,i)=>omniExtraPage(p,i)).join('')+'</div>';
+ return '<div class="pagehead"><span class="eyebrow">OMNISPECTRA · EDITOR DE PÁGINAS</span><h1>Editar páginas 5 e 6</h1><p>As páginas de equipamentos se repetem automaticamente. Acrescente quantas páginas de projeto e resumo precisar.</p></div><div class="visualTools"><button class="primary" onclick="saveOmniVisual()">Salvar páginas</button><button class="ghost" onclick="addOmniProjectPage()">＋ Página 6</button><button class="ghost" onclick="exportOmniTemplateProposal('+visualQuoteIndex+')">Gerar proposta</button><button class="ghost" onclick="go(\'quotes\')">Voltar</button></div><div class="omniVisualPage"><div class="omniVisualKicker">PÁGINA 5 · EQUIPAMENTOS ORÇADOS</div><h2>Equipamentos</h2><p>'+items.length+' itens cadastrados. A paginação acontece automaticamente no documento final.</p>'+items.map(x=>'<div class="omniVisualItem">'+(x.photo?'<img src="'+esc(x.photo)+'">':'<div class="omniNoImage">Sem foto</div>')+'<div><b>'+esc(x.name)+'</b><small>'+esc(x.model||'')+'</small><p>'+esc(x.description||'')+'</p><small>Quantidade: '+(+x.qty||0)+'</small></div></div>').join('')+'</div><div class="omniVisualPage"><div class="omniVisualKicker">PÁGINA 6 · PROJETO / RESUMO</div><h2>Resumo da proposta</h2><div class="omniEditable" contenteditable="true" id="omniSummaryVisual">'+esc(q.summary||'Clique para editar o escopo e os serviços previstos.').replace(/\n/g,'<br>')+'</div></div><div id="omniProjectPages">'+extra.map((p,i)=>omniExtraPage(p,i)).join('')+'</div>';
 }
 function omniExtraPage(p,i){return '<div class="omniVisualPage" data-project-index="'+i+'"><div class="omniVisualKicker">PÁGINA 6 · CONTINUAÇÃO '+(i+1)+'</div><div class="field"><label>Título da página</label><input class="omniExtraTitle" value="'+esc(p.title||'DETALHAMENTO DO PROJETO')+'"></div><div class="field"><label>Conteúdo</label><div class="omniEditable omniExtraContent" contenteditable="true">'+esc(p.content||'Clique para escrever.').replace(/\n/g,'<br>')+'</div></div><div class="field"><label>Imagem do projeto (opcional)</label><input type="file" accept="image/*" onchange="omniProjectPhoto(this,'+i+')"><div class="omniExtraPhoto">'+(p.image?'<img src="'+esc(p.image)+'">':'')+'</div></div><div class="visualTools"><button class="ghost" onclick="moveOmniProjectPage('+i+',-1)">↑ Subir</button><button class="ghost" onclick="moveOmniProjectPage('+i+',1)">↓ Descer</button><button class="ghost" onclick="removeOmniProjectPage('+i+')">Excluir página</button></div></div>'}
 function collectOmniVisual(){
@@ -157,6 +157,80 @@ function addOmniProjectPage(){let q=collectOmniVisual()||get(K.quotes);q[visualQ
 function moveOmniProjectPage(i,d){let q=collectOmniVisual()||get(K.quotes),p=q[visualQuoteIndex].projectPages,j=i+d;if(j<0||j>=p.length)return;[p[i],p[j]]=[p[j],p[i]];set(K.quotes,q);render()}
 function removeOmniProjectPage(i){if(!confirm('Excluir esta página adicional?'))return;let q=collectOmniVisual()||get(K.quotes);q[visualQuoteIndex].projectPages.splice(i,1);set(K.quotes,q);render()}
 function omniProjectPhoto(input,i){let file=input.files&&input.files[0];if(!file)return;let img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{let c=document.createElement('canvas'),z=Math.min(1,900/img.width,900/img.height);c.width=Math.round(img.width*z);c.height=Math.round(img.height*z);c.getContext('2d').drawImage(img,0,0,c.width,c.height);let q=collectOmniVisual()||get(K.quotes);q[visualQuoteIndex].projectPages[i].image=c.toDataURL('image/jpeg',.7);set(K.quotes,q);URL.revokeObjectURL(url);render()};img.src=url}
+
+
+const OMNI_PDF_TEMPLATE='modelo-oficial.pdf';
+async function uploadOmniPDFTemplate(file){
+ if(!file)return;
+ try{
+  if(!/\.pdf$/i.test(file.name))throw Error('Selecione um arquivo PDF.');
+  const p=await PDFLib.PDFDocument.load(await file.arrayBuffer());
+  if(p.getPageCount()!==8)throw Error('O modelo precisa ter exatamente 8 páginas.');
+  const {error}=await db.storage.from(OMNI_PPT_BUCKET).upload(OMNI_PDF_TEMPLATE,file,{upsert:true,contentType:'application/pdf'});
+  if(error)throw error;await updateOmniPDFTemplateStatus();alert('Modelo visual compartilhado! O botão Gerar proposta agora usa este layout.');
+ }catch(e){alert('Não foi possível cadastrar o PDF: '+e.message)}
+}
+async function updateOmniPDFTemplateStatus(){
+ const el=document.getElementById('omniPdfTemplateStatus');if(!el)return;
+ try{
+  const {data,error}=await db.storage.from(OMNI_PPT_BUCKET).list('',{search:OMNI_PDF_TEMPLATE});
+  if(error)throw error;
+  el.textContent=(data||[]).some(x=>x.name===OMNI_PDF_TEMPLATE)?'✓ Modelo visual disponível para toda a equipe.':'Nenhum modelo visual cadastrado. Envie o PDF exportado do PowerPoint.';
+ }catch(e){el.textContent='Erro ao consultar modelo: '+e.message}
+}
+async function exportOmniTemplateProposal(i){
+ if(view==='visual'&&visualQuoteIndex===i)saveOmniVisual(true);
+ const q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
+ if(!window.PDFLib)return alert('Biblioteca de PDF indisponível.');
+ try{
+  const {data,error}=await db.storage.from(OMNI_PPT_BUCKET).download(OMNI_PDF_TEMPLATE);
+  if(error)throw Error('Envie primeiro o PDF original de 8 páginas na aba Modelo da Proposta.');
+  const src=await PDFLib.PDFDocument.load(await data.arrayBuffer());
+  if(src.getPageCount()!==8)throw Error('O modelo precisa ter 8 páginas.');
+  const out=await PDFLib.PDFDocument.create();
+  const font=await out.embedFont(PDFLib.StandardFonts.Helvetica),bold=await out.embedFont(PDFLib.StandardFonts.HelveticaBold);
+  const white=PDFLib.rgb(.92,.96,1),blue=PDFLib.rgb(.3,.7,1);
+  const add=async n=>{const [p]=await out.copyPages(src,[n]);out.addPage(p);return p};
+  const txt=(p,t,x,y,size=11,max=55,col=white,b=false)=>p.drawText(String(t??'').replace(/[^\x20-\x7eÀ-ÿ]/g,' ').slice(0,max),{x,y,size,font:b?bold:font,color:col});
+  const wrap=(p,t,x,y,width=55,size=11,step=15,limit=8)=>{
+   let words=String(t||'').split(/\s+/),line='',row=0;
+   for(const w of words){if((line+' '+w).length>width&&line){txt(p,line,x,y-row*step,size,100);if(++row>=limit)return;line=w}else line+=(line?' ':'')+w}
+   if(line&&row<limit)txt(p,line,x,y-row*step,size,100);
+  };
+  await add(0);let p=await add(1);
+  [[q.client,94,402],[q.address,102,346],[q.number,140,290],[q.consultant,108,234],[q.specifier,127,178],[q.date,78,122]].forEach(([v,x,y])=>txt(p,v,x,y,11,49));
+  await add(2);await add(3);
+  const items=q.items||[];
+  for(let k=0;k<Math.max(1,Math.ceil(items.length/5));k++){
+   p=await add(4);
+   for(let j=0;j<5;j++){
+    const x=items[k*5+j];if(!x)continue;const y=445-j*86;
+    txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),437,y,11,41,white,true);
+    wrap(p,x.model||x.description||'',437,y-18,43,9,12,3);
+    if(x.photo)try{await omniEmbedTemplateImage(out,p,x.photo,368,y-28,58,58)}catch(e){console.warn(e)}
+   }
+  }
+  p=await add(5);wrap(p,q.summary||q.notes||'',50,382,88,14,20,12);
+  for(const extra of q.projectPages||[]){
+   p=await add(5);txt(p,extra.title||'DETALHAMENTO DO PROJETO',45,440,16,55,blue,true);
+   wrap(p,extra.content||'',50,393,94,12,18,12);
+   if(extra.image)try{await omniEmbedTemplateImage(out,p,extra.image,55,80,310,165)}catch(e){console.warn(e)}
+  }
+  p=await add(6);const f=omniCalc(q.items||[],q.finance||{});
+  const money=v=>Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  txt(p,money(f.total),153,127,20,22,white,true);
+  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),440,159,12,45);
+  txt(p,money(f.cash),440,107,15,30);
+  await add(7);
+  const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
+  a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }catch(e){console.error(e);alert('Erro ao gerar proposta: '+e.message)}
+}
+async function omniEmbedTemplateImage(out,p,data,x,y,w,h){
+ const res=await fetch(data),bytes=await res.arrayBuffer();
+ const img=data.startsWith('data:image/png')?await out.embedPng(bytes):await out.embedJpg(bytes);
+ const scale=Math.min(w/img.width,h/img.height);p.drawImage(img,{x:x+(w-img.width*scale)/2,y:y+(h-img.height*scale)/2,width:img.width*scale,height:img.height*scale});
+}
 
 function printOmniProposal(i){
  if(view==='visual'&&visualQuoteIndex===i)saveOmniVisual(true);
@@ -176,5 +250,5 @@ function printOmniProposal(i){
  window.print();setTimeout(()=>d.remove(),2000);
 }
 
-function render(){if(!currentUser)return authScreen();shell(view==='clients'?clients():view==='products'?products():view==='quote'?quote():view==='quotes'?quotes():view==='proposalEditor'?proposalEditor():view==='visual'?omniVisualEditor():home());if(view==='quote'){renderSelected();renderFinance()}if(view==='proposalEditor')updateOmniPPTStatus()}
+function render(){if(!currentUser)return authScreen();shell(view==='clients'?clients():view==='products'?products():view==='quote'?quote():view==='quotes'?quotes():view==='proposalEditor'?proposalEditor():view==='visual'?omniVisualEditor():home());if(view==='quote'){renderSelected();renderFinance()}if(view==='proposalEditor'){updateOmniPPTStatus();updateOmniPDFTemplateStatus()}}
 (async()=>{try{await initializeBlankPDF();let cfg=await fetch('https://poxxqtwolfupfobfhuyd.supabase.co/functions/v1/public-config',{cache:'no-store'}).then(r=>r.json());if(!cfg.url||!cfg.key)throw new Error('Configuração pública incompleta');if(!window.supabase||!window.supabase.createClient)throw new Error('Biblioteca Supabase não carregou');db=window.supabase.createClient(cfg.url,cfg.key);let {data}=await db.auth.getSession();if(data.session)await startSession(data.session.user);else authScreen()}catch(e){console.error(e);app.innerHTML='<main class="wrap"><div class="empty">Não foi possível conectar ao banco: '+esc(e.message||'erro desconhecido')+' — atualize a página.</div></main>'}})();
