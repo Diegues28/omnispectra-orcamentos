@@ -218,11 +218,9 @@ async function exportOmniTemplateProposal(i){
   }
   p=await add(6);const f=omniCalc(q.items||[],q.finance||{});
   const money=v=>Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-  // Os valores ficam ACIMA das linhas decorativas do PowerPoint.
-  // A linha do modelo está abaixo da base tipográfica dos campos.
-  txt(p,money(f.total),153,145,19,22,white,true);
-  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),440,177,11,45);
-  txt(p,money(f.cash),440,125,14,30);
+  txt(p,money(f.total),153,127,20,22,white,true);
+  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),440,159,12,45);
+  txt(p,money(f.cash),440,107,15,30);
   await add(7);
   const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
   a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
