@@ -30,3 +30,14 @@
  .omniPrintTerms{margin-top:14mm}.omniPrintTerms p{display:flex;justify-content:space-between;padding:7mm 0;border-bottom:1px solid #27516d;font-size:13pt}
 }
 @media screen{.productPhoto{max-width:200px;max-height:170px;object-fit:contain;border-radius:10px;margin-top:10px}}
+
+/* Proposal pages 5 and 6 editor */
+.visualTools{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 22px}.visualTools .ghost{padding:11px 14px;border:1px solid #2a5672;border-radius:10px;background:#0b2538;color:#c4e7fa;cursor:pointer}
+.omniVisualPage{background:#07192b;border:1px solid #24516e;border-radius:14px;padding:26px;margin:16px 0;min-height:280px}
+.omniVisualKicker{font-size:11px;color:#48bbff;letter-spacing:2px;font-weight:800}.omniVisualPage h2{font-size:26px;color:#fff}.omniVisualItem{display:grid;grid-template-columns:38% 1fr;gap:16px;padding:16px 0;border-bottom:1px solid #22445b;align-items:center}
+.omniVisualItem img,.omniNoImage{width:100%;height:145px;object-fit:contain;background:#10304a;border-radius:8px}.omniNoImage{display:grid;place-items:center;color:#92afc1}
+.omniVisualItem b{display:block}.omniVisualItem small{display:block;color:#8eb1c7}.omniVisualItem p{white-space:pre-line;color:#c7d9e5;font-size:13px}
+.omniEditable{min-height:150px;white-space:pre-wrap;padding:18px;background:#0c2b43;border:1px dashed #387a9e;border-radius:8px;line-height:1.7;outline:none}
+.omniEditable:focus{border-color:#64c8ff}.omniExtraPhoto img,.omniProductPreview{max-width:100%;max-height:240px;object-fit:contain;border-radius:8px;margin-top:12px}
+@media(max-width:600px){.omniVisualItem{grid-template-columns:1fr}.omniVisualPage{padding:16px}}
+@media print{.omniProjectPrintImage{width:100%;max-height:135mm;object-fit:contain;margin-top:12mm}}
