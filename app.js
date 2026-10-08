@@ -49,28 +49,47 @@ const OMNI_EDITOR_KEY='omni_pdf_custom_v21';
 let omniDraft=null;
 function omniDraftLoad(){if(!omniDraft)omniDraft=JSON.parse(localStorage.getItem(OMNI_EDITOR_KEY)||'[]');return omniDraft}
 
-const OMNI_PPT_META='omni_ppt_template_v24',OMNI_PPT_ASSET='omni_original_pptx_v24';
+const OMNI_PPT_BUCKET='omni-proposal-templates',OMNI_PPT_PATH='modelo-oficial.pptx';
 async function saveOmniPPT(file){
  if(!file)return;
- if(!/\.pptx$/i.test(file.name))return alert('Selecione um arquivo PowerPoint .pptx');
- try{await omniStoreFile(OMNI_PPT_ASSET,file);localStorage.setItem(OMNI_PPT_META,JSON.stringify({name:file.name,size:file.size,updated:new Date().toLocaleString('pt-BR')}));render();alert('PowerPoint salvo neste navegador.')}catch(e){alert('Não foi possível salvar o PowerPoint: '+e.message)}
+ if(!/\.pptx$/i.test(file.name))return alert('Selecione um PowerPoint .pptx');
+ if(file.size>20*1024*1024)return alert('O modelo deve ter no máximo 20 MB.');
+ if(!db||!currentUser)return alert('Entre na sua conta antes de salvar o modelo.');
+ const btn=document.getElementById('omniPptStatus');if(btn)btn.textContent='Enviando modelo para todos os usuários...';
+ try{
+   const {error}=await db.storage.from(OMNI_PPT_BUCKET).upload(OMNI_PPT_PATH,file,{upsert:true,contentType:'application/vnd.openxmlformats-officedocument.presentationml.presentation',cacheControl:'60'});
+   if(error)throw error;
+   await updateOmniPPTStatus();alert('PowerPoint salvo na nuvem! Todos os usuários autorizados poderão baixar o modelo.');
+ }catch(e){await updateOmniPPTStatus();alert('Não foi possível compartilhar o modelo: '+e.message)}
 }
 async function downloadOmniPPT(){
- try{const file=await omniAsset(OMNI_PPT_ASSET);if(!file)return alert('Cadastre o PowerPoint primeiro.');const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=JSON.parse(localStorage.getItem(OMNI_PPT_META)||'{}').name||'OmniSpectra_Modelo.pptx';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000)}catch(e){alert(e.message)}
+ try{
+   const {data,error}=await db.storage.from(OMNI_PPT_BUCKET).download(OMNI_PPT_PATH);
+   if(error)throw error;
+   const url=URL.createObjectURL(data),a=document.createElement('a');a.href=url;a.download='OmniSpectra_Modelo_Oficial.pptx';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }catch(e){alert('Não foi possível baixar o PowerPoint compartilhado: '+e.message)}
 }
 async function removeOmniPPT(){
- if(!confirm('Remover o modelo PowerPoint deste navegador? Os orçamentos não serão apagados.'))return;
- const d=await omniFiles();await new Promise((resolve,reject)=>{const t=d.transaction('assets','readwrite');t.objectStore('assets').delete(OMNI_PPT_ASSET);t.oncomplete=resolve;t.onerror=()=>reject(t.error)});d.close();localStorage.removeItem(OMNI_PPT_META);render();
+ if(!confirm('Remover o PowerPoint compartilhado para TODOS os usuários? As propostas não serão apagadas.'))return;
+ const {error}=await db.storage.from(OMNI_PPT_BUCKET).remove([OMNI_PPT_PATH]);
+ if(error)return alert('Não foi possível remover o modelo: '+error.message);
+ await updateOmniPPTStatus();
 }
-function updateOmniPPTStatus(){
- const el=document.getElementById('omniPptStatus');if(!el)return;
- const m=JSON.parse(localStorage.getItem(OMNI_PPT_META)||'null');
- el.innerHTML=m?'<div class="omniPptCard"><b>Modelo cadastrado: '+esc(m.name)+'</b><small>Salvo em '+esc(m.updated||'')+' · '+(m.size/1024/1024).toFixed(2)+' MB</small></div>':'<p class="hint">Nenhum PowerPoint cadastrado ainda.</p>';
+async function updateOmniPPTStatus(){
+ const el=document.getElementById('omniPptStatus');if(!el||!db)return;
+ el.innerHTML='<p class="hint">Consultando modelo compartilhado...</p>';
+ try{
+   const {data,error}=await db.storage.from(OMNI_PPT_BUCKET).list('',{search:OMNI_PPT_PATH,limit:20});
+   if(error)throw error;
+   const file=(data||[]).find(x=>x.name===OMNI_PPT_PATH);
+   if(!document.getElementById('omniPptStatus'))return;
+   el.innerHTML=file?'<div class="omniPptCard"><b>Modelo oficial disponível para toda a equipe</b><small>PowerPoint .pptx · Atualizado em '+esc(file.updated_at?new Date(file.updated_at).toLocaleString('pt-BR'):'data indisponível')+'</small></div>':'<p class="hint">Nenhum modelo compartilhado cadastrado. Envie o PowerPoint uma vez para disponibilizar a todos os usuários.</p>';
+ }catch(e){el.innerHTML='<p class="hint">Erro ao consultar modelo compartilhado: '+esc(e.message)+'</p>'}
 }
 
 function proposalEditor(){
  let parts=omniDraftLoad();
- return '<div class="pagehead"><span class="eyebrow">PERSONALIZAÇÃO</span><h1>Modelo da Proposta</h1><p>Cadastre o PowerPoint original como arquivo-mestre. Os PDFs continuam disponíveis para anexos. O navegador não converte automaticamente arquivos PPTX em PDF.</p></div><div class="panel"><h3>PowerPoint original (.pptx)</h3><p class="hint">Use o arquivo de 8 páginas como referência principal. As páginas 5 e 6 continuam editáveis no editor de propostas. Este arquivo fica salvo neste navegador.</p><div id="omniPptStatus">Carregando modelo...</div><label class="primary" style="display:inline-block;cursor:pointer;margin:10px 8px 10px 0">Selecionar PowerPoint<input type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="display:none" onchange="saveOmniPPT(this.files[0])"></label><button class="ghost" onclick="downloadOmniPPT()">Baixar PowerPoint</button><button class="ghost omniDanger" onclick="removeOmniPPT()">Remover modelo</button></div><div class="panel"><div id="pdfEditorList">'+(parts.length?parts.map((p,i)=>'<article class="listcard" style="display:block;margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b>'+String(i+1).padStart(2,'0')+' · '+esc(p.name)+'</b><span class="category">PDF</span></div><small class="hint">'+esc(p.fileName||'Arquivo')+'</small><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><button class="ghost" onclick="viewOmniPDF('+i+')">Visualizar</button><button class="ghost" onclick="renameOmniPDF('+i+')">Editar nome</button><label class="ghost" style="cursor:pointer">Substituir<input style="display:none" type="file" accept="application/pdf" onchange="replaceOmniPDF('+i+',this.files[0])"></label><button class="ghost" onclick="moveOmniPDF('+i+',-1)">↑</button><button class="ghost" onclick="moveOmniPDF('+i+',1)">↓</button><button class="ghost" onclick="deleteOmniPDF('+i+')">Excluir</button></div></article>').join(''):'<div class="empty">Nenhum PDF cadastrado. Comece adicionando seu primeiro arquivo.</div>')+'</div><label class="primary" style="display:inline-block;cursor:pointer;margin-top:15px">＋ Adicionar PDF<input type="file" accept="application/pdf" multiple style="display:none" onchange="addOmniPDFs(this.files)"></label><button class="primary" style="margin:15px 0 0 10px" onclick="saveOmniPDFs()">Salvar arquivos</button><small class="hint">Os arquivos são armazenados neste navegador. Não estão sincronizados entre aparelhos.</small></div>'
+ return '<div class="pagehead"><span class="eyebrow">PERSONALIZAÇÃO</span><h1>Modelo da Proposta</h1><p>Cadastre o PowerPoint original na nuvem como arquivo-mestre. Os PDFs continuam disponíveis para anexos. O navegador não converte automaticamente arquivos PPTX em PDF.</p></div><div class="panel"><h3>PowerPoint original (.pptx)</h3><p class="hint">Use o arquivo de 8 páginas como referência principal. As páginas 5 e 6 continuam editáveis no editor de propostas. O modelo é compartilhado na nuvem entre os usuários autorizados.</p><div id="omniPptStatus">Carregando modelo...</div><label class="primary" style="display:inline-block;cursor:pointer;margin:10px 8px 10px 0">Selecionar PowerPoint<input type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="display:none" onchange="saveOmniPPT(this.files[0])"></label><button class="ghost" onclick="downloadOmniPPT()">Baixar PowerPoint</button><button class="ghost omniDanger" onclick="removeOmniPPT()">Remover modelo</button></div><div class="panel"><div id="pdfEditorList">'+(parts.length?parts.map((p,i)=>'<article class="listcard" style="display:block;margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b>'+String(i+1).padStart(2,'0')+' · '+esc(p.name)+'</b><span class="category">PDF</span></div><small class="hint">'+esc(p.fileName||'Arquivo')+'</small><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><button class="ghost" onclick="viewOmniPDF('+i+')">Visualizar</button><button class="ghost" onclick="renameOmniPDF('+i+')">Editar nome</button><label class="ghost" style="cursor:pointer">Substituir<input style="display:none" type="file" accept="application/pdf" onchange="replaceOmniPDF('+i+',this.files[0])"></label><button class="ghost" onclick="moveOmniPDF('+i+',-1)">↑</button><button class="ghost" onclick="moveOmniPDF('+i+',1)">↓</button><button class="ghost" onclick="deleteOmniPDF('+i+')">Excluir</button></div></article>').join(''):'<div class="empty">Nenhum PDF cadastrado. Comece adicionando seu primeiro arquivo.</div>')+'</div><label class="primary" style="display:inline-block;cursor:pointer;margin-top:15px">＋ Adicionar PDF<input type="file" accept="application/pdf" multiple style="display:none" onchange="addOmniPDFs(this.files)"></label><button class="primary" style="margin:15px 0 0 10px" onclick="saveOmniPDFs()">Salvar arquivos</button><small class="hint">Os arquivos são armazenados neste navegador. Não estão sincronizados entre aparelhos.</small></div>'
 }
 async function omniStoreFile(key,file){let d=await omniFiles();await new Promise((resolve,reject)=>{let t=d.transaction('assets','readwrite');t.objectStore('assets').put(file,key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)});d.close()}
 async function addOmniPDFs(files){for(let file of Array.from(files||[])){if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf')){alert('Escolha arquivos PDF.');continue}let id='custom_'+Date.now()+'_'+Math.random().toString(36).slice(2);await omniStoreFile(id,file);omniDraftLoad().push({id,name:file.name.replace(/\.pdf$/i,''),fileName:file.name})}render()}
