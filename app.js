@@ -1,8 +1,5 @@
 const K={clients:'omni_clients',products:'omni_products',quotes:'omni_quotes',settings:'omni_settings'};
-const SUPABASE_URL='https://poxxqtwolfupfobfhuyd.supabase.co';
-const SUPABASE_KEY='sb_publishable_Hs3MDXiLUbct95gLxXvRSw_iL7CPAdX';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let cloudReady=false,currentUser=null,syncTimer=null;
+let db=null,cloudReady=false,currentUser=null,syncTimer=null;
 const get=k=>JSON.parse(localStorage.getItem(k)||'[]');
 function set(k,v){localStorage.setItem(k,JSON.stringify(v));if(cloudReady&&[K.clients,K.products,K.quotes].includes(k)){clearTimeout(syncTimer);syncTimer=setTimeout(()=>pushCloud(k,v),250)}}
 const tableFor=k=>k===K.clients?'clientes':k===K.products?'catalogo':k===K.quotes?'propostas':null;
@@ -39,4 +36,4 @@ async function signUp(){let email=authEmail.value.trim().toLowerCase(),password=
 async function startSession(user){currentUser=user;let a=await db.from('usuarios_autorizados').select('email,nome').eq('email',(user.email||'').toLowerCase()).maybeSingle();if(a.error||!a.data){await db.auth.signOut();cloudReady=false;currentUser=null;return authScreen('Este e-mail não está autorizado para acessar os dados da OmniSpectra.')}try{await pullCloud();cloudReady=true;render()}catch(e){console.error(e);currentUser=null;authScreen('Não foi possível sincronizar o banco agora. Tente novamente.')}}
 async function signOut(){cloudReady=false;currentUser=null;await db.auth.signOut();authScreen()}
 function render(){if(!currentUser)return authScreen();shell(view==='clients'?clients():view==='products'?products():view==='quote'?quote():view==='quotes'?quotes():home())}
-(async()=>{let {data}=await db.auth.getSession();if(data.session)await startSession(data.session.user);else authScreen()})();
+(async()=>{try{let cfg=await fetch('https://poxxqtwolfupfobfhuyd.supabase.co/functions/v1/public-config',{cache:'no-store'}).then(r=>r.json());db=window.supabase.createClient(cfg.url,cfg.key);let {data}=await db.auth.getSession();if(data.session)await startSession(data.session.user);else authScreen()}catch(e){console.error(e);app.innerHTML='<main class="wrap"><div class="empty">Não foi possível conectar ao banco. Atualize a página e tente novamente.</div></main>'}})();
