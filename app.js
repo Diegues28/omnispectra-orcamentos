@@ -199,7 +199,7 @@ async function exportOmniTemplateProposal(i){
   };
   await add(0);let p=await add(1);
   txt(p,q.client,94,400,20,42,white,true);
-  [[q.address,102,346],[q.number,140,290],[q.consultant,108,234],[q.specifier,127,178],[q.date,78,122]].forEach(([v,x,y])=>txt(p,v,x,y,11,49));
+  [[q.address,102,346],[q.number,140,290],[q.consultant,108,234],[q.specifier,127,178],[q.date,78,122]].forEach(([v,x,y])=>txt(p,v,x,y,16,43));
   await add(2);await add(3);
   const items=q.items||[];
   for(let k=0;k<Math.max(1,Math.ceil(items.length/5));k++){
