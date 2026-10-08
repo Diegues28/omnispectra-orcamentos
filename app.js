@@ -203,6 +203,8 @@ async function exportOmniTemplateProposal(i){
   await add(0);let p=await add(1);
   txt(p,q.client,94,400,20,42,white,true);
   [[q.address,102,346],[q.number,140,290],[q.consultant,108,234],[q.specifier,127,178],[q.date,78,122]].forEach(([v,x,y])=>txt(p,v,x,y,18,41));
+  const clientProject=(get(K.clients).find(x=>x.name.trim().toLowerCase()===String(q.client||'').trim().toLowerCase())||{}).projectImage||q.projectImage;
+  if(clientProject)try{await omniEmbedTemplateImage(out,p,clientProject,490,218,210,185)}catch(e){console.warn('Imagem do projeto:',e)}
   await add(2);await add(3);
   const items=q.items||[];
   for(let k=0;k<Math.max(1,Math.ceil(items.length/5));k++){
@@ -215,8 +217,7 @@ async function exportOmniTemplateProposal(i){
    }
   }
   p=await add(5);wrap(p,q.summary||q.notes||'',50,382,88,14,20,12);
-  const clientProject=(get(K.clients).find(x=>x.name.trim().toLowerCase()===String(q.client||'').trim().toLowerCase())||{}).projectImage||q.projectImage;
-  if(clientProject)try{await omniEmbedTemplateImage(out,p,clientProject,430,100,295,275)}catch(e){console.warn('Imagem do projeto:',e)}
+
   for(const extra of q.projectPages||[]){
    p=await add(5);txt(p,extra.title||'DETALHAMENTO DO PROJETO',45,440,16,55,blue,true);
    wrap(p,extra.content||'',50,393,94,12,18,12);
