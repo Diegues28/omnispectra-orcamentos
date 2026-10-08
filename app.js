@@ -25,7 +25,7 @@ function renderSelected(){let b=document.querySelector('#selectedItems');if(!b)r
 function saveQuote(){let items=quoteItems.filter(x=>x.qty>0),total=omniCalc(items,quoteFinance).total,q=get(K.quotes),obj={client:qc.value,address:qa.value,number:qn.value||('2026.'+String(q.length+1).padStart(3,'0')),consultant:qconsult.value,specifier:qspec.value,date:editingQuote!==null?(q[editingQuote].date||new Date().toLocaleDateString('pt-BR')):new Date().toLocaleDateString('pt-BR'),payment:qpay.value,notes:qnotes.value,summary:qsummary.value,finance:{...quoteFinance},items,total};if(editingQuote!==null)q[editingQuote]=obj;else q.push(obj);set(K.quotes,q);let c=get(K.clients);if(qc.value&&!c.some(x=>x.name===qc.value)){c.push({name:qc.value,address:qa.value});set(K.clients,c)}editingQuote=null;quoteItems=[];go('quotes')}
 function newQuote(){editingQuote=null;quoteItems=[];quoteFinance={};go('quote')}
 function editQuote(i){editingQuote=i;view='quote';shell(quote(i));setTimeout(()=>{renderSelected();searchCatalog('');renderFinance()},0)}
-function quotes(){let q=get(K.quotes);return pageHead('Propostas','Histórico dos orçamentos criados.','＋ Nova proposta','newQuote()')+(q.length?q.map((x,i)=>'<article class="proposal"><div><span class="category">'+esc(x.number)+'</span><h3>'+esc(x.client||'Cliente não informado')+'</h3><small>'+esc(x.address||'')+' · '+x.date+'</small></div><div class="proposalActions"><strong>'+br(x.total)+'</strong><button class="editbtn" onclick="editQuote('+i+')">Editar</button><button class="editbtn" onclick="generateMergedPDF('+i+')">Gerar PDF</button></div></article>').reverse().join(''):empty('Nenhuma proposta criada ainda.'))}
+function quotes(){let q=get(K.quotes);return pageHead('Propostas','Histórico dos orçamentos criados.','＋ Nova proposta','newQuote()')+(q.length?q.map((x,i)=>'<article class="proposal"><div><span class="category">'+esc(x.number)+'</span><h3>'+esc(x.client||'Cliente não informado')+'</h3><small>'+esc(x.address||'')+' · '+x.date+'</small></div><div class="proposalActions"><strong>'+br(x.total)+'</strong><button class="editbtn" onclick="editQuote('+i+')">Editar</button><button class="editbtn" onclick="printOmniProposal('+i+')">Gerar proposta</button><button class="ghost" onclick="generateMergedPDF('+i+')">PDFs anexados</button></div></article>').reverse().join(''):empty('Nenhuma proposta criada ainda.'))}
 async function omniAsset(id){let d=await omniFiles();return await new Promise((resolve,reject)=>{let t=d.transaction('assets','readonly'),q=t.objectStore('assets').get(id);q.onsuccess=()=>{d.close();resolve(q.result||null)};q.onerror=()=>reject(q.error)})}
 async function generateMergedPDF(i){
  let q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
@@ -88,6 +88,23 @@ function refreshFinance(){
  const el=document.getElementById('financePreview');if(!el)return;
  const x=omniCalc(quoteItems,quoteFinance);
  el.innerHTML='<h3>Investimento final: '+br(x.total)+'</h3><p>Equipamentos + instalação: '+br(x.base)+'</p><p>RT: '+br(x.rt)+' · Nota: '+br(x.note)+' · Desconto: − '+br(x.discount)+'</p><p>Entrada: '+br(x.entry)+' · '+x.parts+' parcelas de '+br(x.balance/x.parts)+'</p><p>À vista: '+br(x.cash)+'</p>'+(x.entry>x.total?'<p style="color:#ffb39b">A entrada supera o total. Ajuste as condições.</p>':'');
+}
+
+
+function printOmniProposal(i){
+ const q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
+ document.getElementById('omniPrintArea')?.remove();
+ const d=document.createElement('div');d.id='omniPrintArea';
+ const f=omniCalc(q.items||[],q.finance||{});
+ const page=(title,content)=>'<section class="omniPrintPage"><header class="omniPrintHeader"><b>OMNI<span>SPECTRA</span></b><small>PROPOSTA COMERCIAL</small></header><h1>'+title+'</h1><div class="omniPrintContent">'+content+'</div><footer>OMNISPECTRA · TECNOLOGIA QUE ACOMPANHA O SEU FUTURO</footer></section>';
+ const field=(k,v)=>'<div class="omniPrintField"><small>'+k+'</small><strong>'+esc(v||'—')+'</strong></div>';
+ let html=page('DADOS DA PROPOSTA','<div class="omniPrintGrid">'+field('CLIENTE',q.client)+field('ENDEREÇO',q.address)+field('Nº DO ORÇAMENTO',q.number)+field('CONSULTOR',q.consultant)+field('ESPECIFICADOR',q.specifier)+field('DATA',q.date)+'</div>');
+ const items=q.items||[];
+ for(let i=0;i<items.length;i+=3)html+=page('EQUIPAMENTOS E SERVIÇOS',items.slice(i,i+3).map(x=>'<article class="omniPrintProduct"><div class="omniPrintImage">'+(x.photo?'<img src="'+esc(x.photo)+'">':'EQUIPAMENTO')+'</div><div><h2>'+esc(x.name)+'</h2><p>'+esc(x.model||'')+'</p><p>'+esc(x.description||'')+'</p><strong>QUANTIDADE: '+(+x.qty||0)+'</strong></div></article>').join(''));
+ html+=page('RESUMO DA PROPOSTA','<div class="omniPrintSummary">'+esc(q.summary||q.notes||'').replace(/\n/g,'<br>')+'</div>');
+ html+=page('INVESTIMENTO','<div class="omniPrintTotal"><small>INVESTIMENTO TOTAL</small><h2>'+br(f.total)+'</h2></div><div class="omniPrintTerms"><p>Entrada <strong>'+br(f.entry)+'</strong></p><p>Saldo em '+f.parts+' parcelas de <strong>'+br(f.balance/f.parts)+'</strong></p><p>Pagamento à vista <strong>'+br(f.cash)+'</strong></p></div><p>'+esc(q.payment||'')+'</p>');
+ d.innerHTML=html;document.body.appendChild(d);
+ window.print();setTimeout(()=>d.remove(),2000);
 }
 
 function render(){if(!currentUser)return authScreen();shell(view==='clients'?clients():view==='products'?products():view==='quote'?quote():view==='quotes'?quotes():view==='proposalEditor'?proposalEditor():home());if(view==='quote'){renderSelected();renderFinance()}}
