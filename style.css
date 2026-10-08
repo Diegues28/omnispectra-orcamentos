@@ -4,3 +4,29 @@
 .pdfbar{display:flex;justify-content:space-between;gap:10px;margin-bottom:18px}.pdfdoc{max-width:720px;margin:auto}.pdfpage{position:relative;background:#081621;border:1px solid #1d3c51;min-height:930px;margin:0 0 22px;padding:58px 54px;overflow:hidden}.pdfbrand{font-weight:900;letter-spacing:2px;font-size:18px}.pdfbrand span{color:var(--cyan)}.pdfbrand.big{font-size:32px}.pdfline{height:1px;background:#1d455f;margin:18px 0 55px}.pdfkicker{color:var(--cyan);font-size:11px;letter-spacing:3px;font-weight:800}.pdfpage h2{font-size:32px;margin:12px 0 35px}.cover{background:radial-gradient(circle at 70% 30%,#173e58,#07131d 45%,#040b11);display:flex;flex-direction:column}.covermid{margin:auto 0}.covermid h1{font-size:30px;line-height:1.35}.coverbottom{color:#7994a5;font-size:12px}.pdfdata{display:grid;grid-template-columns:1fr 1fr;gap:12px 30px}.pdfdata p{font-weight:700;border-bottom:1px solid #17364b;padding-bottom:12px}.pdfdata span{display:block;color:#7892a3;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}.pdfplaceholder{height:380px;margin-top:45px;border:1px dashed #28506a;display:grid;place-items:center;color:#557387;font-size:11px}.pdfitem{display:grid;grid-template-columns:55px 1fr;gap:15px;padding:18px 0;border-bottom:1px solid #17364b}.pdfqty{font-size:24px;color:var(--cyan);font-weight:800}.pdfitem b,.pdfitem small{display:block}.pdfitem small{color:#7892a3;margin-top:5px}.pdffoot{position:absolute;left:54px;right:54px;bottom:48px;color:#7791a2;font-size:11px;border-top:1px solid #17364b;padding-top:15px}.pdftotal{margin:90px 0 45px;padding:28px;border:1px solid #28506a;background:#0c2130}.pdftotal span{display:block;color:#8aa4b4;font-size:11px;letter-spacing:2px}.pdftotal strong{display:block;font-size:42px;color:var(--cyan2);margin-top:10px}.closing{display:flex;flex-direction:column;justify-content:center;text-align:center;align-items:center;background:radial-gradient(circle,#11344b,#06111a 55%)}.closing h2{font-size:40px;margin-top:90px}.closing p{color:#8ba4b5}@media(max-width:600px){.pdfpage{min-height:680px;padding:32px 25px}.pdffoot{left:25px;right:25px;bottom:28px}.pdfdata{grid-template-columns:1fr}.pdfpage h2{font-size:25px}.covermid h1{font-size:23px}.pdftotal{margin-top:45px}.pdftotal strong{font-size:30px}}@media print{body{background:white}.wrap{max-width:none;padding:0}.wrap>header,.nav,.pdfbar{display:none!important}.pdfdoc{max-width:none}.pdfpage{width:210mm;height:297mm;min-height:0;margin:0;border:0;page-break-after:always;padding:18mm 16mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pdffoot{left:16mm;right:16mm;bottom:15mm}}
 .linkedBox{margin:20px 0;padding:16px;border:1px solid #24506b;border-radius:13px;background:#081722}.linkedBox h3{margin:0 0 4px;color:var(--cyan2)}select{width:100%;border:1px solid #24475f;background:#06131d;color:white;border-radius:10px;padding:12px}.check{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;padding:8px 0}.check input{width:auto}.selectitem:has(.category:first-child){position:relative}
 .authwrap{max-width:520px;padding-top:7vh}.authpanel{padding:28px}.authpanel h1{font-size:34px;margin:10px 0}.authpanel p{color:var(--muted);line-height:1.5}.authmsg{margin:12px 0;padding:11px 12px;border:1px solid #24506b;border-radius:10px;color:var(--cyan2);font-size:12px}.ghost{border:1px solid #2b607f;background:transparent;color:var(--cyan2);padding:12px 16px;border-radius:11px;font-weight:750;cursor:pointer}.authsecondary{margin-top:10px}
+
+/* Customer proposal print layout */
+#omniPrintArea{display:none}
+@media print{
+ body:has(#omniPrintArea) .wrap,body:has(#omniPrintArea) .nav{display:none!important}
+ body:has(#omniPrintArea){background:#fff!important}
+ #omniPrintArea{display:block!important;color:#fff;font-family:Inter,Arial,sans-serif}
+ .omniPrintPage{position:relative;box-sizing:border-box;width:210mm;min-height:297mm;page-break-after:always;break-after:page;background:#071729!important;padding:20mm 17mm 24mm;print-color-adjust:exact;-webkit-print-color-adjust:exact;overflow:hidden}
+ .omniPrintHeader{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #205071;padding-bottom:12mm}
+ .omniPrintHeader b{font-size:19pt;letter-spacing:2px}.omniPrintHeader b span{color:#42baf7}.omniPrintHeader small{color:#9ebbd1;font-size:8pt}
+ .omniPrintPage h1{color:#55c3ff;font-size:26pt;letter-spacing:1px;margin:14mm 0 11mm}
+ .omniPrintGrid{display:grid;grid-template-columns:1fr 1fr;gap:12mm 8mm}
+ .omniPrintField small{display:block;color:#4bb8f3;font-size:9pt;margin-bottom:3mm}
+ .omniPrintField strong{font-size:12pt;font-weight:600}
+ .omniPrintPage footer{position:absolute;bottom:12mm;left:17mm;right:17mm;border-top:1px solid #205071;padding-top:5mm;font-size:8pt;color:#9bb8ca}
+ .omniPrintProduct{display:grid;grid-template-columns:43% 1fr;gap:8mm;align-items:center;min-height:62mm;border-bottom:1px solid #204460;padding:5mm 0}
+ .omniPrintImage{width:100%;height:55mm;background:#0d2c44;display:grid;place-items:center;color:#779ab2;font-size:9pt}
+ .omniPrintImage img{width:100%;height:100%;object-fit:contain}
+ .omniPrintProduct h2{font-size:16pt;color:#fff}.omniPrintProduct p{font-size:10pt;line-height:1.5;color:#d4e5ef}
+ .omniPrintProduct strong{font-size:10pt;color:#5bc4ff}
+ .omniPrintSummary{font-size:12pt;line-height:1.9;white-space:normal}
+ .omniPrintTotal{padding:16mm 8mm;text-align:center;background:#0d304b;border:1px solid #245e84}
+ .omniPrintTotal small{font-size:11pt;letter-spacing:2px;color:#bdd9e8}.omniPrintTotal h2{font-size:35pt;color:#fff;margin:5mm 0}
+ .omniPrintTerms{margin-top:14mm}.omniPrintTerms p{display:flex;justify-content:space-between;padding:7mm 0;border-bottom:1px solid #27516d;font-size:13pt}
+}
+@media screen{.productPhoto{max-width:200px;max-height:170px;object-fit:contain;border-radius:10px;margin-top:10px}}
