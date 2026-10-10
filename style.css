@@ -46,3 +46,8 @@
 
 /* v0.14 management */
 .moduleGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0 28px}.moduleCard{text-align:left;min-height:112px;padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#0e2030,#091721);color:var(--text);cursor:pointer}.moduleCard b{display:block;font-size:16px;margin-bottom:8px;color:var(--cyan2)}.moduleCard small{color:var(--muted);line-height:1.45}.statusPill{display:inline-flex;align-items:center;padding:6px 9px;border:1px solid #2a5a77;border-radius:999px;color:var(--cyan2);font-size:10px;font-weight:800;white-space:nowrap}.statusPill.ok{border-color:#39745e;color:#a7f3d0}.health{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0 24px}.health b{font-size:20px}.health span{color:var(--muted);font-size:12px}.health.ok{border-color:#2d7258}.health.warn{border-color:#806b2d}.health.bad{border-color:#8b3c4b}.omniNav button{max-width:110px}@media(max-width:600px){.moduleGrid{grid-template-columns:1fr}.proposalActions .primary{font-size:11px;padding:9px}.health{align-items:flex-start;flex-direction:column}}
+
+/* OmniSpectra brand header */
+.omniBrandHeader{display:flex;align-items:center;justify-content:center;padding:8px 0 16px;margin-bottom:18px;min-height:74px;overflow:hidden}
+.omniBrandLogo{display:block;width:auto;height:auto;max-width:210px;max-height:92px;object-fit:contain}
+@media(max-width:600px){.omniBrandHeader{min-height:62px;padding:6px 0 12px;margin-bottom:14px}.omniBrandLogo{max-width:170px;max-height:74px}}
