@@ -35,6 +35,8 @@ function omniAutoExtras(x,qty=1){let n=((x.name||'')+' '+(x.model||'')+' '+(x.ca
  if(/access point|wi-fi|wifi|unifi.*(ap|lite)|omada.*(ap|eap)|mikrotik/.test(n)){add('Instalação e configuração de equipamento Wi-Fi','Serviço',180);add('Passagem de ponto de rede','Serviço',120);cable('Cabo de rede Cat6',25*qty);return a}
  if(/fe 20150|fecho magn[eé]tico/.test(n)){add('Instalação de fecho / fechadura de controle de acesso','Serviço',80);return a}
  if(/bt 3000|acionador de sa[ií]da|botoeira/.test(n)){add('Instalação de botoeira / acionador de saída','Serviço',50);return a}
+ if(/fa 1250|fonte de alimenta[cç][aã]o ininterrupta/.test(n)){add('Instalação de fonte com bateria','Serviço',180);return a}
+ if(/xb 1270|bateria vrla 12v 7ah/.test(n)){return a}
  if(/interfone/.test(n)){add('Passagem de cabeamento de interfone','Serviço',120);cable('Cabo de rede',25*qty);return a}
  if((x.category||'').toLowerCase().includes('som')&&/caixa/.test(n)&&!/caixa de passagem/.test(n)){add('Cabeamento de caixa de som','Serviço',80);cable('Cabo de som',25*qty)}
  return a}
