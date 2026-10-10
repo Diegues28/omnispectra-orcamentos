@@ -57,3 +57,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 body{position:relative;background:radial-gradient(circle at 70% -10%,#12314a 0,transparent 35%),linear-gradient(180deg,rgba(6,17,27,.96),rgba(5,13,20,.96));background-attachment:fixed}
 .wrap{position:relative;z-index:1}
 @media(max-width:600px){body::before{background-position:center 42%;background-size:92vw auto;opacity:.22}}
+
+/* v48 - visible branded watermark over the page background */
+body::before{content:"";position:fixed;inset:0;z-index:0!important;pointer-events:none;background-image:url("https://poxxqtwolfupfobfhuyd.supabase.co/storage/v1/object/public/omni-brand/omnispectra-logo.jpg")!important;background-repeat:no-repeat!important;background-position:center 48%!important;background-size:min(58vw,620px) auto!important;filter:grayscale(1)!important;opacity:.075!important;mix-blend-mode:screen}
+body>.wrap,#app,.nav{position:relative;z-index:1}
+#app{min-height:100vh;background:transparent!important}
+.wrap{background:transparent!important}
+@media(max-width:600px){body::before{background-size:82vw auto!important;background-position:center 42%!important;opacity:.065!important}}
