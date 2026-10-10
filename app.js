@@ -253,8 +253,9 @@ async function exportOmniTemplateProposal(i){
    if(line&&row<limit)txt(p,line,x,y-row*step,size,100);
   };
   await add(0);let p=await add(1);
-  txt(p,q.client,94,430,16,42,white,true);
-  [[q.address,102,372],[q.number,140,316],[q.consultant,108,260],[q.specifier,127,204],[q.date,78,148]].forEach(([v,x,y])=>txt(p,v,x,y,14,41));
+  // DADOS DA PROPOSTA: calibrated against the current template.
+  txt(p,q.client,112,427,15,38,white,true);
+  [[q.address,116,370,12,46],[q.number,153,314,12,28],[q.consultant,119,258,12,34],[q.specifier,133,202,12,31],[q.date,98,146,12,22]].forEach(([v,x,y,size,max])=>txt(p,v,x,y,size,max));
   const clientProject=(get(K.clients).find(x=>x.name.trim().toLowerCase()===String(q.client||'').trim().toLowerCase())||{}).projectImage||q.projectImage;
   if(clientProject)try{await omniEmbedTemplateImage(out,p,clientProject,490,218,210,185)}catch(e){console.warn('Imagem do projeto:',e)}
   await add(2);await add(3);
@@ -285,8 +286,10 @@ async function exportOmniTemplateProposal(i){
   txt(p,money(f.total),170,149,15,22,white,true);
   txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,189,9.5,43);
   txt(p,money(f.cash),520,128,11,30);
-  // PRAZOS and GARANTIA are now fixed artwork in the template.
-  // Only deadlineDays remains variable and will be overlaid on the finalized template.
+  // PRAZOS/GARANTIA stay fixed; fill only the editable deadline blank.
+  const d=Math.max(1,Math.floor(+q.deadlineDays||parseInt(q.deadline)||10));
+  const words={10:'dez',15:'quinze',20:'vinte',25:'vinte e cinco',30:'trinta',35:'trinta e cinco',40:'quarenta',45:'quarenta e cinco',50:'cinquenta',60:'sessenta',90:'noventa',120:'cento e vinte'};
+  txt(p,d+(words[d]?' ('+words[d]+')':''),292,371,10.5,28,white,true);
   await add(7);
   const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
   a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
