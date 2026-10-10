@@ -64,3 +64,7 @@ body>.wrap,#app,.nav{position:relative;z-index:1}
 #app{min-height:100vh;background:transparent!important}
 .wrap{background:transparent!important}
 @media(max-width:600px){body::before{background-size:82vw auto!important;background-position:center 42%!important;opacity:.065!important}}
+
+/* v49 - larger watermark */
+body::before{background-size:min(82vw,900px) auto!important;background-position:center 48%!important;}
+@media(max-width:600px){body::before{background-size:115vw auto!important;background-position:center 43%!important;}}
