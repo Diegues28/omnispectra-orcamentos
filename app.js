@@ -252,12 +252,13 @@ async function exportOmniTemplateProposal(i){
   // Posicionar somente os números acima das linhas, sem duplicar moeda.
   // Page 8 template alignment (measured against the editable proposal artwork).
   // Baseline values must stay on the horizontal rules, not below them.
+  // Values aligned to the three template rules.
   txt(p,money(f.total),170,126,15,22,white,true);
   txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,166,9.5,43);
   txt(p,money(f.cash),520,105,11,30);
-  // Fine alignment: text stays centered vertically inside the reserved boxes.
-  if(q.deadline)wrap(p,q.deadline,19,395,66,10.6,12.2,9);
-  if(q.warrantySupport)wrap(p,q.warrantySupport,505,368,48,7.1,9.2,9);
+  // Commercial copy follows the approved PowerPoint reference: large, readable blocks inside the two panels.
+  if(q.deadline)wrap(p,q.deadline,34,407,56,13.5,16.2,7);
+  if(q.warrantySupport)wrap(p,q.warrantySupport,514,407,56,13.5,16.2,7);
   await add(7);
   const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
   a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
