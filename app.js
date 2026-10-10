@@ -251,12 +251,12 @@ async function exportOmniTemplateProposal(i){
   // Posicionar somente os números acima das linhas, sem duplicar moeda.
   // Page 8 template alignment (measured against the editable proposal artwork).
   // Baseline values must stay on the horizontal rules, not below them.
-  txt(p,money(f.total),170,118,15,22,white,true);
-  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,157,10,43);
-  txt(p,money(f.cash),520,96,12,30);
-  // Start near the top-left of each reserved box and keep text above the icon row.
-  if(q.deadline)wrap(p,q.deadline,50,360,47,7.4,10,9);
-  if(q.warrantySupport)wrap(p,q.warrantySupport,505,360,48,7.4,10,9);
+  txt(p,money(f.total),170,126,15,22,white,true);
+  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,166,9.5,43);
+  txt(p,money(f.cash),520,105,11,30);
+  // Fine alignment: text stays centered vertically inside the reserved boxes.
+  if(q.deadline)wrap(p,q.deadline,50,368,47,7.1,9.2,9);
+  if(q.warrantySupport)wrap(p,q.warrantySupport,505,368,48,7.1,9.2,9);
   await add(7);
   const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
   a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
