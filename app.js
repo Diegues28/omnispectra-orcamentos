@@ -265,7 +265,7 @@ async function exportOmniTemplateProposal(i){
     const x=items[k*5+j];if(!x)continue;const y=445-j*86;
     txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),437,y,11,41,white,true);
     wrap(p,x.model||x.description||'',437,y-18,43,9,12,3);
-    const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));const livePhoto=(liveProduct&&liveProduct.photo)||x.photo;if(livePhoto)try{await omniEmbedTemplateImage(out,p,livePhoto,382,y-25,50,50)}catch(e){console.warn(e)}
+    const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));const livePhoto=(liveProduct&&liveProduct.photo)||x.photo;if(livePhoto)try{await omniEmbedTemplateImage(out,p,livePhoto,389,y-24,46,46)}catch(e){console.warn(e)}
    }
   }
   p=await add(5);wrap(p,q.summary||q.notes||'',50,382,88,14,20,12);
@@ -282,9 +282,9 @@ async function exportOmniTemplateProposal(i){
   // Page 8 template alignment (measured against the editable proposal artwork).
   // Baseline values must stay on the horizontal rules, not below them.
   // Investment values: restored to the previously approved baseline alignment.
-  txt(p,money(f.total),170,126,15,22,white,true);
-  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,166,9.5,43);
-  txt(p,money(f.cash),520,105,11,30);
+  txt(p,money(f.total),170,140,15,22,white,true);
+  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,180,9.5,43);
+  txt(p,money(f.cash),520,119,11,30);
   // PRAZOS and GARANTIA are now fixed artwork in the template.
   // Only deadlineDays remains variable and will be overlaid on the finalized template.
   await add(7);
