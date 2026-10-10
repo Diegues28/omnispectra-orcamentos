@@ -51,3 +51,9 @@
 .omniBrandHeader{display:flex;align-items:center;justify-content:center;padding:8px 0 16px;margin-bottom:18px;min-height:74px;overflow:hidden}
 .omniBrandLogo{display:block;width:auto;height:auto;max-width:210px;max-height:92px;object-fit:contain}
 @media(max-width:600px){.omniBrandHeader{min-height:62px;padding:6px 0 12px;margin-bottom:14px}.omniBrandLogo{max-width:170px;max-height:74px}}
+
+/* Watermark OmniSpectra */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(5,13,20,.86),rgba(5,13,20,.86)),url("https://poxxqtwolfupfobfhuyd.supabase.co/storage/v1/object/public/omni-brand/omnispectra-logo.jpg");background-repeat:no-repeat;background-position:center 46%;background-size:min(72vw,720px) auto;filter:grayscale(1);opacity:.28}
+body{position:relative;background:radial-gradient(circle at 70% -10%,#12314a 0,transparent 35%),linear-gradient(180deg,rgba(6,17,27,.96),rgba(5,13,20,.96));background-attachment:fixed}
+.wrap{position:relative;z-index:1}
+@media(max-width:600px){body::before{background-position:center 42%;background-size:92vw auto;opacity:.22}}
