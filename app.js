@@ -249,13 +249,14 @@ async function exportOmniTemplateProposal(i){
   const money=v=>Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   // Modelo corrigido: os símbolos R$ já estão desenhados no fundo.
   // Posicionar somente os números acima das linhas, sem duplicar moeda.
-  // Values sit on the template baselines, immediately after the printed R$ labels.
-  txt(p,money(f.total),172,96,15,22,white,true);
-  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,121,10,43);
-  txt(p,money(f.cash),520,62,12,30);
-  // Fit commercial text completely inside the two reserved boxes.
-  if(q.deadline)wrap(p,q.deadline,50,318,47,8,11,8);
-  if(q.warrantySupport)wrap(p,q.warrantySupport,505,318,48,8,11,8);
+  // Page 8 template alignment (measured against the editable proposal artwork).
+  // Baseline values must stay on the horizontal rules, not below them.
+  txt(p,money(f.total),170,118,15,22,white,true);
+  txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,157,10,43);
+  txt(p,money(f.cash),520,96,12,30);
+  // Start near the top-left of each reserved box and keep text above the icon row.
+  if(q.deadline)wrap(p,q.deadline,50,360,47,7.4,10,9);
+  if(q.warrantySupport)wrap(p,q.warrantySupport,505,360,48,7.4,10,9);
   await add(7);
   const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
   a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
