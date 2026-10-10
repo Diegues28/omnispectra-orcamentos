@@ -255,7 +255,7 @@ async function exportOmniTemplateProposal(i){
   txt(p,money(f.entry)+' + '+f.parts+'x de '+money(f.balance/f.parts),520,166,9.5,43);
   txt(p,money(f.cash),520,105,11,30);
   // Fine alignment: text stays centered vertically inside the reserved boxes.
-  if(q.deadline)wrap(p,q.deadline,50,395,47,6.6,8.2,12);
+  if(q.deadline)wrap(p,q.deadline,35,414,49,6.6,8.2,12);
   if(q.warrantySupport)wrap(p,q.warrantySupport,505,368,48,7.1,9.2,9);
   await add(7);
   const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
