@@ -71,9 +71,9 @@ const sections=[
 ];
 try{
 const pdf=await PDFLib.PDFDocument.create(),f=await pdf.embedFont(PDFLib.StandardFonts.Helvetica),b=await pdf.embedFont(PDFLib.StandardFonts.HelveticaBold);let p,y;
-const clean=t=>String(t||'').replace(/[^\\x20-\\x7eÀ-ÿ]/g,' ');
+const clean=t=>String(t||'').replace(/[^\x20-\x7eÀ-ÿ]/g,' ');
 function page(){p=pdf.addPage([595,842]);y=795;p.drawText('OMNISPECTRA | CONTRATO',{x:44,y:812,font:b,size:14,color:PDFLib.rgb(.1,.3,.5)})}
-function write(t,bold){const font=bold?b:f,size=bold?11:9.5;let line='';for(const w of clean(t).split(/\\s+/)){const test=line?line+' '+w:w;if(font.widthOfTextAtSize(test,size)>500&&line){if(y<55)page();p.drawText(line,{x:44,y,font,size});y-=14;line=w}else line=test}if(line){if(y<55)page();p.drawText(line,{x:44,y,font,size});y-=14}y-=bold?5:12}
+function write(t,bold){const font=bold?b:f,size=bold?11:9.5;let line='';for(const w of clean(t).split(/\s+/)){const test=line?line+' '+w:w;if(font.widthOfTextAtSize(test,size)>500&&line){if(y<55)page();p.drawText(line,{x:44,y,font,size});y-=14;line=w}else line=test}if(line){if(y<55)page();p.drawText(line,{x:44,y,font,size});y-=14}y-=bold?5:12}
 page();write('CONTRATO DE PRESTAÇÃO DE SERVIÇOS E FORNECIMENTO DE EQUIPAMENTOS',true);write('MINUTA PARA REVISÃO JURÍDICA. Preencha os campos indicados antes de assinar.',false);
 for(const [h,t] of sections){write(h,true);write(t,false)}
 const url=URL.createObjectURL(new Blob([await pdf.save()],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download='Contrato_OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
