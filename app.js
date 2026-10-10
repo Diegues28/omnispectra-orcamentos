@@ -254,8 +254,8 @@ async function exportOmniTemplateProposal(i){
   };
   await add(0);let p=await add(1);
   // DADOS DA PROPOSTA: calibrated against the current template.
-  txt(p,q.client,112,427,15,38,white,true);
-  [[q.address,116,370,12,46],[q.number,153,314,12,28],[q.consultant,119,258,12,34],[q.specifier,133,202,12,31],[q.date,98,146,12,22]].forEach(([v,x,y,size,max])=>txt(p,v,x,y,size,max));
+  txt(p,q.client,112,435,15,38,white,true);
+  [[q.address,116,378,12,46],[q.number,153,322,12,28],[q.consultant,119,258,12,34],[q.specifier,133,202,12,31],[q.date,98,146,12,22]].forEach(([v,x,y,size,max])=>txt(p,v,x,y,size,max));
   const clientProject=(get(K.clients).find(x=>x.name.trim().toLowerCase()===String(q.client||'').trim().toLowerCase())||{}).projectImage||q.projectImage;
   if(clientProject)try{await omniEmbedTemplateImage(out,p,clientProject,490,218,210,185)}catch(e){console.warn('Imagem do projeto:',e)}
   await add(2);await add(3);
@@ -263,10 +263,10 @@ async function exportOmniTemplateProposal(i){
   for(let k=0;k<Math.max(1,Math.ceil(items.length/5));k++){
    p=await add(4);
    for(let j=0;j<5;j++){
-    const x=items[k*5+j];if(!x)continue;const y=445-j*86;
-    txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),437,y,11,41,white,true);
-    wrap(p,x.model||x.description||'',437,y-18,43,9,12,3);
-    const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));const livePhoto=(liveProduct&&liveProduct.photo)||x.photo;if(livePhoto)try{await omniEmbedTemplateImage(out,p,396,y-23,42,42)}catch(e){console.warn(e)}
+    const x=items[k*5+j];if(!x)continue;const y=462-j*86;
+    txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),437,y,10.5,41,white,true);
+    wrap(p,x.model||x.description||'',437,y-16,43,8.5,11,2);
+    const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));const livePhoto=(liveProduct&&liveProduct.photo)||x.photo;if(livePhoto)try{await omniEmbedTemplateImage(out,p,396,y-30,42,42)}catch(e){console.warn(e)}
    }
   }
   p=await add(5);wrap(p,q.summary||q.notes||'',50,382,88,14,20,12);
@@ -289,7 +289,7 @@ async function exportOmniTemplateProposal(i){
   // PRAZOS/GARANTIA stay fixed; fill only the editable deadline blank.
   const d=Math.max(1,Math.floor(+q.deadlineDays||parseInt(q.deadline)||10));
   const words={10:'dez',15:'quinze',20:'vinte',25:'vinte e cinco',30:'trinta',35:'trinta e cinco',40:'quarenta',45:'quarenta e cinco',50:'cinquenta',60:'sessenta',90:'noventa',120:'cento e vinte'};
-  txt(p,d+(words[d]?' ('+words[d]+')':''),292,371,10.5,28,white,true);
+  txt(p,d+(words[d]?' ('+words[d]+')':''),118,392,9.5,24,white,true);
   await add(7);
   const bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
   a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
