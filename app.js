@@ -54,7 +54,7 @@ async function generateOmniContract(i){
 const q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
 const c=get(K.clients).find(x=>x.name===q.client)||{};
 const sections=[
-['PARTES','CONTRATADA: OmniSpectra, razão social [PREENCHER], CNPJ [PREENCHER], endereço [PREENCHER]. CONTRATANTE: '+q.client+', CPF/CNPJ [PREENCHER], contato '+(c.contact||'[PREENCHER]')+'. Obra: '+q.address+'.'],
+['PARTES','CONTRATADA: OmniSpectra, razão social [PREENCHER], CNPJ [PREENCHER], endereço [PREENCHER]. CONTRATANTE: '+q.client+', CPF/CNPJ [PREENCHER], contato '+(c.contact||'[PREENCHER]')+'. Obra: '+q.address+'. Data: '+(q.date||'[PREENCHER]')+'. Os valores e condições apresentados neste contrato/orçamento são válidos por 7 (sete) dias corridos a partir da data de emissão.'],
 ['1. OBJETO','Fornecimento e instalação dos equipamentos e serviços descritos na proposta comercial nº '+q.number+', integrante deste contrato como Anexo I. Serviços não previstos exigem aprovação adicional.'],
 ['2. PREÇO E PAGAMENTO','Valor total de '+br(q.total)+'. Condições: '+(q.payment||'[PREENCHER]')+'. Alterações dependem de orçamento e aceite prévios.'],
 ['3. PRAZO','Execução estimada em '+(q.deadlineDays||parseInt(q.deadline)||10)+' dias úteis, após liberação da obra e atendimento das condições de início acordadas. Impedimentos e mudanças serão comunicados e registrados.'],
