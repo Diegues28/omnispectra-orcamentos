@@ -167,7 +167,7 @@ function omniCalc(items,f={}){
  const rt=base*n(f.rt)/100,note=(base+rt)*n(f.nf)/100,subtotal=base+rt+note;
  const discount=Math.min(subtotal,f.discountMode==='fixed'?n(f.discount):subtotal*n(f.discount)/100);
  const total=Math.max(0,subtotal-discount);
- const entry=f.entry!==undefined&&f.entry!==''?n(f.entry):equipmentCost*(1+n(f.entryPercent??10)/100);
+ const entry=f.noEntry?0:(f.entry!==undefined&&f.entry!==''?n(f.entry):equipmentCost*(1+n(f.entryPercent??10)/100));
  const parts=Math.max(1,Math.floor(n(f.parts||4)));
  const cash=total*(1-Math.min(100,n(f.cashDiscount??5))/100);
  return {equipmentCost,base,rt,note,discount,total,entry,parts,cash,balance:Math.max(0,total-entry)};
@@ -175,13 +175,13 @@ function omniCalc(items,f={}){
 function renderFinance(){
  const el=document.getElementById('financeBox');if(!el)return;
  const fields=[['rt','RT (%)',0],['nf','Acréscimo com nota (%)',0],['discount','Desconto comercial',0],['reason','Motivo do desconto',''],['entryPercent','Entrada: custo dos equipamentos + (%)',10],['entry','Entrada manual (opcional)',''],['parts','Parcelas',4],['cashDiscount','Desconto à vista (%)',5]];
- el.innerHTML='<div class="two">'+fields.map(([k,label,def])=>'<div class="field"><label>'+label+'</label><input '+(k==='reason'?'type="text"':'type="number" step=".01"')+' value="'+esc(quoteFinance[k]??def)+'" oninput="quoteFinance[\''+k+'\']=this.value;refreshFinance()"></div>').join('')+'</div><div class="field"><label>Tipo de desconto comercial</label><select onchange="quoteFinance.discountMode=this.value;refreshFinance()"><option value="percent" '+(quoteFinance.discountMode!=='fixed'?'selected':'')+'>Percentual (%)</option><option value="fixed" '+(quoteFinance.discountMode==='fixed'?'selected':'')+'>Valor fixo (R$)</option></select></div><div class="linkedBox" id="financePreview"></div>';
+ el.innerHTML='<div class="field"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" style="width:auto" '+(quoteFinance.noEntry?'checked':'')+' onchange="quoteFinance.noEntry=this.checked;refreshFinance()"> Sem entrada — dividir o valor total nas parcelas</label></div><div class="two">'+fields.map(([k,label,def])=>'<div class="field"><label>'+label+'</label><input '+(k==='reason'?'type="text"':'type="number" step=".01"')+' value="'+esc(quoteFinance[k]??def)+'" '+((k==='entry'||k==='entryPercent')&&quoteFinance.noEntry?'disabled':'')+' oninput="quoteFinance[\''+k+'\']=this.value;refreshFinance()"></div>').join('')+'</div><div class="field"><label>Tipo de desconto comercial</label><select onchange="quoteFinance.discountMode=this.value;refreshFinance()"><option value="percent" '+(quoteFinance.discountMode!=='fixed'?'selected':'')+'>Percentual (%)</option><option value="fixed" '+(quoteFinance.discountMode==='fixed'?'selected':'')+'>Valor fixo (R$)</option></select></div><div class="linkedBox" id="financePreview"></div>';
  refreshFinance();
 }
 function refreshFinance(){
  const el=document.getElementById('financePreview');if(!el)return;
  const x=omniCalc(quoteItems,quoteFinance);
- el.innerHTML='<h3>Investimento final: '+br(x.total)+'</h3><p>Equipamentos + instalação: '+br(x.base)+'</p><p>RT: '+br(x.rt)+' · Nota: '+br(x.note)+' · Desconto: − '+br(x.discount)+'</p><p>Entrada: '+br(x.entry)+' · '+x.parts+' parcelas de '+br(x.balance/x.parts)+'</p><p>À vista: '+br(x.cash)+'</p>'+(x.entry>x.total?'<p style="color:#ffb39b">A entrada supera o total. Ajuste as condições.</p>':'');
+ el.innerHTML='<h3>Investimento final: '+br(x.total)+'</h3><p>Equipamentos + instalação: '+br(x.base)+'</p><p>RT: '+br(x.rt)+' · Nota: '+br(x.note)+' · Desconto: − '+br(x.discount)+'</p><p>'+(quoteFinance.noEntry?'Sem entrada · '+x.parts+' parcelas de '+br(x.total/x.parts):'Entrada: '+br(x.entry)+' · '+x.parts+' parcelas de '+br(x.balance/x.parts))+'</p><p>À vista: '+br(x.cash)+'</p>'+(x.entry>x.total?'<p style="color:#ffb39b">A entrada supera o total. Ajuste as condições.</p>':'');
 }
 
 
