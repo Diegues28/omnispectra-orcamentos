@@ -255,7 +255,8 @@ async function exportOmniTemplateProposal(i){
   await add(0);let p=await add(1);
   // DADOS DA PROPOSTA: calibrated against the current template.
   txt(p,q.client,112,442,15,38,white,true);
-  [[q.address,116,378,12,46],[q.number,153,322,12,28],[q.consultant,119,258,12,34],[q.specifier,133,202,12,31],[q.date,98,146,12,22]].forEach(([v,x,y,size,max])=>txt(p,v,x,y,size,max));
+  const pdfDate=new Date().toLocaleDateString('pt-BR');
+  [[q.address,116,378,12,46],[q.number,153,322,12,28],[q.consultant,119,258,12,34],[q.specifier,133,202,12,31],[pdfDate,98,146,12,22]].forEach(([v,x,y,size,max])=>txt(p,v,x,y,size,max));
   txt(p,'ORÇAMENTO VÁLIDO POR 7 DIAS',98,124,8.5,40,white,true);
   const clientProject=(get(K.clients).find(x=>x.name.trim().toLowerCase()===String(q.client||'').trim().toLowerCase())||{}).projectImage||q.projectImage;
   if(clientProject)try{await omniEmbedTemplateImage(out,p,clientProject,490,218,210,185)}catch(e){console.warn('Imagem do projeto:',e)}
