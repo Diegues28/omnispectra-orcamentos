@@ -264,9 +264,9 @@ async function exportOmniTemplateProposal(i){
    p=await add(4);
    for(let j=0;j<5;j++){
     const x=items[k*5+j];if(!x)continue;const y=462-j*86;
-    txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),455,y,10.5,39,white,true);
-    wrap(p,x.model||x.description||'',455,y-16,40,8.5,11,2);
-    const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));const livePhoto=(liveProduct&&liveProduct.photo)||x.photo;if(livePhoto)try{await omniEmbedTemplateImage(out,p,414,y-30,42,42)}catch(e){console.warn(e)}
+    txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),475,y,10.5,36,white,true);
+    wrap(p,x.model||x.description||'',475,y-16,37,8.5,11,2);
+    const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));const livePhoto=(liveProduct&&liveProduct.photo)||x.photo;if(livePhoto)try{await omniEmbedTemplateImage(out,p,428,y-30,42,42)}catch(e){console.warn(e)}
    }
   }
   p=await add(5);wrap(p,q.summary||q.notes||'',50,382,88,14,20,12);
