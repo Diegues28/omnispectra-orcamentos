@@ -330,7 +330,8 @@ function printOmniProposal(i){
 async function omniRefreshManagement(){
  if(!db||!currentUser)return;
  const map=[['compras','compras'],['agenda','agenda'],['os','ordens_servico'],['contratantes','contratantes'],['financeiro','movimentos_financeiros'],['notificacoes','notificacoes'],['fornecedores','fornecedores'],['atualizacoes','atualizacoes_catalogo'],['projetos','projetos'],['crm','crm_oportunidades'],['estoque','estoque'],['posvenda','pos_venda'],['tarefas','tarefas'],['usuarios','usuarios_autorizados']];
- for(const [k,t] of map){const r=await db.from(t).select('*').order('id',{ascending:false}).limit(500);if(!r.error)omniMgmt[k]=r.data||[]}
+ const results=await Promise.all(map.map(async([k,t])=>{let q=db.from(t).select('*');q=t==='usuarios_autorizados'?q.order('email',{ascending:true}):q.order('id',{ascending:false});const r=await q.limit(500);return [k,r]}));
+ for(const [k,r] of results){if(!r.error)omniMgmt[k]=r.data||[];else console.warn('Falha ao carregar '+k,r.error)}
 }
 function omniMenu(title,desc,cards){return '<div class="pagehead"><span class="eyebrow">GESTÃO OMNISPECTRA</span><h1>'+title+'</h1><p>'+desc+'</p></div><div class="moduleGrid">'+cards.map(x=>'<button class="moduleCard" onclick="go(\''+x[1]+'\')"><b>'+x[0]+'</b><small>'+x[2]+'</small></button>').join('')+'</div>'}
 function commercial(){return omniMenu('Comercial','Clientes, oportunidades, propostas e garantias em um único grupo.',[['Clientes','clients','Cadastro de clientes'],['CRM / Oportunidades','crm','Lead até aprovação'],['Orçamentos e propostas','quotes','Criar, editar e aprovar'],['Garantias','afterSales','Clientes em garantia e novos serviços'],['Catálogo','products','Equipamentos e preços'],['Atualizações','updates','Novos produtos e mudanças de preço']])}
