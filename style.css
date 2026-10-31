@@ -110,3 +110,6 @@ body::before{background-size:min(82vw,900px) auto!important;background-position:
 
 /* v101 unified object editing */
 .designerPoint.selected{outline:3px solid #f97316!important;outline-offset:4px}.designerRoom.selected polygon{stroke:#f97316!important;stroke-width:4}.designerRibbonBtn.danger{font-weight:700}
+
+/* v104 automatic electrical routes */
+.designerConduits{pointer-events:none}.designerConduit{fill:none;stroke:#7b8790;stroke-width:3;stroke-dasharray:9 5;opacity:.9}.designerConduit.light{stroke-width:2}.designerConduit.tue{stroke-width:4;stroke-dasharray:none}.designerPoint.chuveiro{font-size:10px;font-weight:800}
