@@ -104,3 +104,6 @@ body::before{background-size:min(82vw,900px) auto!important;background-position:
 
 /* v99 room + wall editing */
 .designerArchitecture{pointer-events:auto}.wallGroup{cursor:default}.designerWallHit{stroke:transparent;stroke-width:24;pointer-events:stroke;cursor:pointer}.wallGroup.selected .designerWall{stroke:#f97316!important}.wallGroup.selected text{fill:#c2410c;font-weight:800}.designerRibbonBtn.danger{color:#a83232}.designerRibbonBtn.danger:hover{background:#fee2e2;border-color:#ef9a9a}
+
+/* v100 Planner-like room dragging */
+.designerRoom polygon{fill:#38bdf80b;stroke:#38bdf844;stroke-width:2;pointer-events:all;cursor:grab}.designerRoom text{font-size:14px;fill:#31505f;text-anchor:middle;dominant-baseline:middle;pointer-events:none}.designerRoom.selected polygon{fill:#38bdf820;stroke:#0ea5e9;stroke-width:3}.designerRoom:active polygon{cursor:grabbing}.designerArchitecture{touch-action:none}
