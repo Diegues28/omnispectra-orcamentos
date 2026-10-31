@@ -107,3 +107,6 @@ body::before{background-size:min(82vw,900px) auto!important;background-position:
 
 /* v100 Planner-like room dragging */
 .designerRoom polygon{fill:#38bdf80b;stroke:#38bdf844;stroke-width:2;pointer-events:all;cursor:grab}.designerRoom text{font-size:14px;fill:#31505f;text-anchor:middle;dominant-baseline:middle;pointer-events:none}.designerRoom.selected polygon{fill:#38bdf820;stroke:#0ea5e9;stroke-width:3}.designerRoom:active polygon{cursor:grabbing}.designerArchitecture{touch-action:none}
+
+/* v101 unified object editing */
+.designerPoint.selected{outline:3px solid #f97316!important;outline-offset:4px}.designerRoom.selected polygon{stroke:#f97316!important;stroke-width:4}.designerRibbonBtn.danger{font-weight:700}
