@@ -116,3 +116,6 @@ body::before{background-size:min(82vw,900px) auto!important;background-position:
 
 /* v105 draggable electrical points */
 .designerPoint{touch-action:none;cursor:grab}.designerPoint:active{cursor:grabbing}
+
+/* v108 specific outlet dropdown */
+.designerSpecific{position:relative;display:inline-flex}.designerSpecific summary{list-style:none}.designerSpecific summary::-webkit-details-marker{display:none}.designerSpecificMenu{position:absolute;top:100%;left:0;z-index:30;display:flex;gap:4px;padding:8px;background:#fff;border:1px solid #d8d8d8;border-radius:8px;box-shadow:0 8px 24px #0002;min-width:max-content}.designerSpecific:not([open]) .designerSpecificMenu{display:none}
