@@ -119,3 +119,6 @@ body::before{background-size:min(82vw,900px) auto!important;background-position:
 
 /* v108 specific outlet dropdown */
 .designerSpecific{position:relative;display:inline-flex}.designerSpecific summary{list-style:none}.designerSpecific summary::-webkit-details-marker{display:none}.designerSpecificMenu{position:absolute;top:100%;left:0;z-index:30;display:flex;gap:4px;padding:8px;background:#fff;border:1px solid #d8d8d8;border-radius:8px;box-shadow:0 8px 24px #0002;min-width:max-content}.designerSpecific:not([open]) .designerSpecificMenu{display:none}
+
+/* v111 infrastructure isometric preview */
+.infraWorkspace{position:relative;overflow:hidden;background:#f7f7f5}.infraStage{width:100%;min-height:620px;display:flex;align-items:center;justify-content:center}.infraSvg{width:100%;height:auto;max-height:720px}.infraWall{fill:none;stroke:#b9bdc1;stroke-width:1.3;opacity:.65}.infraRoute{fill:none;stroke:#9a6a08;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}.infraDrop{stroke:#9a6a08;stroke-width:2;opacity:.85}.infraNode{fill:#2f3337;stroke:#c58b16;stroke-width:2}.infraLabel{font-size:13px;font-weight:800;fill:#24272a}.infraControls{position:absolute;z-index:4;top:12px;left:12px;display:flex;gap:8px}.infraControls button{border:1px solid #ccc;background:#fff;border-radius:7px;padding:8px 12px;cursor:pointer}
