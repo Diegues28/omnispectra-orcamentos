@@ -1,0 +1,45 @@
+/* OmniSpectra v112 | levantamento do imóvel */
+.surveyPage{padding-bottom:42px;max-width:1080px}
+.surveyTop{display:flex;justify-content:flex-start;margin:8px 0 12px}
+.surveyHeader{background:linear-gradient(120deg,#0e2a3c,#081923);border:1px solid #23516c;border-radius:16px;padding:24px;margin-bottom:16px}
+.surveyHeader h1{margin:5px 0 8px;font-size:clamp(24px,4vw,34px)}
+.surveyHeader p{color:#a9c4d7;margin:0 0 20px}
+.surveySteps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.surveySteps span{font-size:12px;line-height:1.4;text-align:center;border:1px solid #28516a;border-radius:10px;padding:10px 5px;color:#8ba6b6;background:#071521}
+.surveySteps span.done{border-color:#2d7186;color:#d4f7ff;background:#113747}
+.surveySteps span.current{background:#176184;border-color:#39b8f4;color:#fff;font-weight:800}
+.surveyModes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.surveyMode{padding:18px 10px;border:1px solid #28516c;background:#0a2030;color:#c9e6f6;border-radius:12px;cursor:pointer;font-weight:700}
+.surveyMode.active{background:#123f5a;border-color:#39b8f4;color:#fff;box-shadow:0 0 0 1px #39b8f4 inset}
+.surveyMode:disabled{opacity:.65;cursor:default}
+.surveyActions,.surveyIntroActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.surveyActions button,.surveyIntroActions button{min-height:40px}
+.surveyBadge{border:1px solid #2d8fae;background:#123b50;color:#b8e7f8;border-radius:99px;padding:7px 12px;font-size:12px}
+.surveyFileBtn{display:inline-flex;justify-content:center;align-items:center;gap:7px;padding:11px 14px;border-radius:9px;cursor:pointer;font-size:14px;font-weight:700;min-height:42px}
+.surveyFileBtn.primary{background:#2eb5ef;color:#081b26}
+.surveyFileBtn.ghost{border:1px solid #32617c;background:#0e2a3b;color:#e6f5fa}
+.surveyGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.surveyForm{margin-top:16px;padding:16px;border:1px solid #28516a;background:#081b29;border-radius:12px}
+.surveyMediaList,.surveyRoomList{display:grid;gap:9px;margin-top:18px}
+.surveyMediaItem,.surveyRoomRow{display:flex;align-items:center;gap:12px;background:#0b2232;border:1px solid #234960;padding:12px;border-radius:10px}
+.surveyMediaItem .grow,.surveyRoomRow .grow{min-width:0;flex:1}
+.surveyMediaItem b,.surveyRoomRow b{display:block;overflow-wrap:anywhere}
+.surveyMediaItem small,.surveyRoomRow small{display:block;color:#9ebdd0;margin-top:5px;overflow-wrap:anywhere}
+.surveyDanger{border-color:#974950!important;color:#ffc1c1!important}
+.surveyCaution{border-left:3px solid #e6aa4a;padding:10px 13px;margin-top:14px;color:#d0dfea;background:#34281755;font-size:13px;line-height:1.5}
+.surveyPreview{background:#f6fafc;border:1px solid #c6d9e4;border-radius:12px;overflow:auto;margin-top:20px;padding:8px}
+.surveyPreview svg{display:block;width:100%;max-height:600px;min-width:320px}
+.surveyNext{justify-content:flex-end;margin:18px 0 24px}
+.surveyPage .field{margin-top:10px}
+.surveyPage .field textarea{width:100%}
+@media(max-width:760px){
+ .surveyHeader{padding:16px}
+ .surveySteps{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .surveyModes{grid-template-columns:1fr}
+ .surveyMode{padding:13px}
+ .surveyGrid{grid-template-columns:1fr}
+ .surveyMediaItem,.surveyRoomRow{flex-wrap:wrap}
+ .surveyMediaItem .grow,.surveyRoomRow .grow{flex-basis:calc(100% - 48px)}
+ .surveyMediaItem button,.surveyRoomRow button{flex:1}
+ .surveyActions .surveyFileBtn{flex:1}
+}
