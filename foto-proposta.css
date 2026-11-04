@@ -1,0 +1,7 @@
+/* OmniSpectra v114 — fotos nos cartões de equipamentos da proposta */
+.omniVisualPhotoPicker{position:relative;display:block;cursor:pointer;border-radius:10px;overflow:hidden;border:1px dashed #38708f;background:#10304a}
+.omniVisualPhotoPicker img,.omniVisualPhotoPicker .omniNoImage{width:100%;height:155px;object-fit:contain;display:block}
+.omniVisualPhotoPicker>span{display:block;text-align:center;font-weight:700;font-size:12px;padding:9px 6px;color:#c6edff;background:#17415a}
+.omniVisualPhotoPicker:focus-within,.omniVisualPhotoPicker:hover{border-color:#49bbed;box-shadow:0 0 0 2px #49bbed33}
+.omniVisualPhotoPicker input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media(max-width:600px){.omniVisualPhotoPicker img,.omniVisualPhotoPicker .omniNoImage{height:190px}}
