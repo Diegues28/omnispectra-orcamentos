@@ -1,0 +1,34 @@
+/* OmniSpectra v113 — Ambientes e descrição de propostas */
+.omniRoomSelector{border-color:#2a526a}
+.omniSummaryGenerator{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.omniSummaryGenerator button{min-height:42px}
+.omniSummaryGenerator small{flex:1;min-width:220px}
+#selectedItems .selectitem{flex-wrap:wrap}
+.omniItemLocations{width:100%;flex:1 0 100%;margin-top:8px}
+.omniItemRooms{border-top:1px dashed #2b5269;padding-top:9px}
+.omniItemRooms summary{cursor:pointer;display:flex;align-items:center;gap:12px;color:#aee5fc;font-weight:700;list-style:none}
+.omniItemRooms summary::-webkit-details-marker{display:none}
+.omniItemRooms summary small{color:#9fbbcd;font-size:12px;font-weight:500}
+.omniItemRooms summary::before{content:'＋';font-weight:700;color:#53c6ef}
+.omniItemRooms[open] summary::before{content:'−'}
+.omniRoomInputs{display:grid;grid-template-columns:minmax(150px,2fr) minmax(150px,2fr) minmax(80px,.75fr) auto;gap:10px;align-items:end;margin-top:12px}
+.omniRoomInputs .field{margin:0}
+.omniRoomInputs input,.omniRoomInputs select{width:100%;min-width:0}
+.omniRoomInputs>button{min-height:42px;white-space:nowrap}
+.omniRoomQty{max-width:110px}
+.omniRoomChips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 0}
+.omniRoomChip{display:inline-flex;align-items:center;gap:7px;border:1px solid #39758f;border-radius:99px;background:#103347;color:#d3f4ff;padding:5px 8px 5px 12px;font-size:12px}
+.omniRoomChip button{width:24px;height:24px;min-width:24px;border-radius:50%;border:0;background:#244e63;color:#fff;font-size:16px;cursor:pointer}
+.omniItemRooms>p.hint{margin:8px 0 0}
+@media(max-width:800px){
+ .omniRoomInputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .omniRoomQty{max-width:none}
+ .omniRoomInputs>button{width:100%}
+ .omniSummaryGenerator{display:block}
+ .omniSummaryGenerator button{width:100%}
+ .omniSummaryGenerator small{display:block;margin-top:10px}
+}
+@media(max-width:430px){
+ .omniRoomInputs{grid-template-columns:1fr}
+ .omniItemRooms summary{flex-wrap:wrap}
+}
