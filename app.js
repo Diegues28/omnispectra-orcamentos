@@ -373,7 +373,7 @@ async function exportOmniTemplateProposal(i){
     // Show an actual product photograph, not a generic category icon.
     let illustration='';
     try{illustration=await omniCategoryImageData(group)}catch(e){console.warn('Foto fixa da categoria indisponível',group,e)}
-    if(illustration)try{await omniEmbedTemplateImage(out,p,illustration,lx+4,ly+4,lw-8,lh-8)}catch(e){console.warn('Falha ao inserir foto ilustrativa',e)}
+    if(illustration)try{await omniEmbedTemplateImage(out,p,illustration,lx+4,ly+4,lw-8,lh-8,true)}catch(e){console.warn('Falha ao inserir foto ilustrativa',e)}
     const rx=W*.46,rw=W-rx-25,rh=69,gap=9;
     for(let j=0;j<batch.length;j++){
      const x=batch[j],y=H-92-j*(rh+gap)-rh;
@@ -413,7 +413,7 @@ async function exportOmniTemplateProposal(i){
   a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
  }catch(e){console.error(e);alert('Erro ao gerar proposta: '+e.message)}
 }
-async function omniEmbedTemplateImage(out,p,data,x,y,w,h){
+async function omniEmbedTemplateImage(out,p,data,x,y,w,h,cover=false){
  if(!data||typeof data!=='string')return;
  const response=await fetch(data);
  if(!response.ok)throw Error('Imagem indisponível (HTTP '+response.status+').');
@@ -423,9 +423,15 @@ async function omniEmbedTemplateImage(out,p,data,x,y,w,h){
   const width=source.naturalWidth||source.width,height=source.naturalHeight||source.height;
   if(!width||!height)throw Error('A foto não possui dimensões válidas.');
   const maximum=Math.max(w,h)>100?1400:600,ratio=Math.min(1,maximum/Math.max(width,height));
-  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(width*ratio));canvas.height=Math.max(1,Math.round(height*ratio));
+  const canvas=document.createElement('canvas');
+  if(cover){const factor=Math.min(1,1400/Math.max(w,h));canvas.width=Math.max(1,Math.round(w*factor));canvas.height=Math.max(1,Math.round(h*factor))}
+  else{canvas.width=Math.max(1,Math.round(width*ratio));canvas.height=Math.max(1,Math.round(height*ratio))}
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('Não foi possível preparar a foto.');
-  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(source,0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  if(cover){const aspect=w/h,sourceAspect=width/height;let sw=width,sh=height;
+   if(sourceAspect>aspect)sw=height*aspect;else sh=width/aspect;
+   ctx.drawImage(source,(width-sw)/2,(height-sh)/2,sw,sh,0,0,canvas.width,canvas.height);
+  }else ctx.drawImage(source,0,0,canvas.width,canvas.height);
   const jpeg=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.92));
   if(!jpeg)throw Error('Falha ao converter a imagem para o PDF.');
   const image=await out.embedJpg(await jpeg.arrayBuffer()),scale=Math.min(w/image.width,h/image.height);
