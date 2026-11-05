@@ -284,22 +284,34 @@ async function exportOmniTemplateProposal(i){
   if(clientProject)try{await omniEmbedTemplateImage(out,p,clientProject,490,218,210,185)}catch(e){console.warn('Imagem do projeto:',e)}
   await add(2);await add(3);
   const items=(q.items||[]).filter(omniClientVisibleItem);
+  const products=get(K.products)||[];
+  const photo=x=>{const z=products.find(v=>(x.id&&v.id===x.id)||((v.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(v.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));return x.__photoOverride&&x.photo?x.photo:((z&&z.photo)||x.photo||'')};
   const groups=new Map();
-  for(const item of items){const group=omniProposalGroup(item);if(!groups.has(group))groups.set(group,[]);groups.get(group).push(item)}
-  if(!groups.size)groups.set('EQUIPAMENTOS',[]);
+  for(const item of items){const g=omniProposalGroup(item);if(!groups.has(g))groups.set(g,[]);groups.get(g).push(item)}
+  const bg=PDFLib.rgb(.005,.025,.055),panel=PDFLib.rgb(.012,.055,.105),stroke=PDFLib.rgb(.13,.39,.61);
   for(const [group,groupItems] of groups){
-   for(let k=0;k<Math.max(1,Math.ceil(groupItems.length/5));k++){
-    p=await add(4);
-    // Title and illustration stay inside the existing PDF template's equipment area.
-    txt(p,group,24,496,12,31,blue,true);
-    try{await omniEmbedTemplateImage(out,p,omniProposalIllustration(group),23,76,215,220)}catch(e){console.warn('Ilustração da categoria:',e)}
-    for(let j=0;j<Math.min(5,groupItems.length-k*5);j++){
-     const x=groupItems[k*5+j],y=470-j*86;
-     txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),475,y,10.5,36,white,true);
-     wrap(p,x.model||x.description||'',475,y-16,37,8.5,11,2);
-     const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));
-     const livePhoto=x.__photoOverride&&x.photo?x.photo:((liveProduct&&liveProduct.photo)||x.photo);
-     if(livePhoto)try{await omniEmbedTemplateImage(out,p,livePhoto,428,y-30,42,42)}catch(e){console.warn('Foto do item não inserida:',e)}
+   for(let k=0;k<Math.ceil(groupItems.length/5);k++){
+    const batch=groupItems.slice(k*5,k*5+5);p=await add(4);
+    const W=p.getWidth(),H=p.getHeight();
+    // Mask the fixed empty equipment slots, without touching the footer.
+    p.drawRectangle({x:10,y:62,width:W-20,height:H-93,color:bg});
+    txt(p,'EQUIPAMENTOS ORÇADOS',24,H-37,12,40,blue,true);
+    txt(p,group,24,H-72,16,39,white,true);
+    wrap(p,'Incluso Projeto, Infraestrutura, cabeamento, Instalação e Configuração',24,H-105,43,10,15,3);
+    const lx=24,ly=87,lw=W*.39,lh=H*.47;
+    p.drawRectangle({x:lx,y:ly,width:lw,height:lh,color:panel,borderColor:stroke,borderWidth:1});
+    // Show an actual product photograph, not a generic category icon.
+    const illustration=batch.map(photo).find(Boolean);
+    if(illustration)try{await omniEmbedTemplateImage(out,p,illustration,lx+4,ly+4,lw-8,lh-8)}catch(e){console.warn('Foto ilustrativa indisponível',e)}
+    const rx=W*.46,rw=W-rx-25,rh=69,gap=9;
+    for(let j=0;j<batch.length;j++){
+     const x=batch[j],y=H-92-j*(rh+gap)-rh;
+     p.drawRectangle({x:rx,y,width:rw,height:rh,color:panel,borderColor:stroke,borderWidth:1});
+     p.drawRectangle({x:rx+7,y:y+6,width:rh-12,height:rh-12,color:bg,borderColor:stroke,borderWidth:.8});
+     const srcPhoto=photo(x);
+     if(srcPhoto)try{await omniEmbedTemplateImage(out,p,srcPhoto,rx+9,y+8,rh-16,rh-16)}catch(e){console.warn('Foto do equipamento indisponível',x.name,e)}
+     txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),rx+rh+8,y+39,10.5,40,white,true);
+     wrap(p,x.model||x.description||'',rx+rh+8,y+22,40,8.5,11,2);
     }
    }
   }
