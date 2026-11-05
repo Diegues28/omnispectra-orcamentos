@@ -54,7 +54,7 @@ async function saveQuote(){omniConditionalExtras();let items=quoteItems.filter(x
 function newQuote(){editingQuote=null;quoteItems=[];quoteFinance={};go('quote')}
 function editQuote(i){editingQuote=i;view='quote';shell(quote(i));setTimeout(()=>{renderSelected();searchCatalog('');renderFinance()},0)}
 async function deleteOmniQuote(i){const all=get(K.quotes),q=all[i];if(!q)return;const label=(q.number||'sem número')+' — '+(q.client||'cliente não informado');if(!confirm('Excluir definitivamente a proposta '+label+'?\n\nOs cadastros de clientes e equipamentos serão preservados.'))return;if(q.id&&db&&currentUser){const {error}=await db.from('propostas').delete().eq('id',q.id);if(error)return alert('Não foi possível excluir a proposta: '+error.message);await omniReload(K.quotes);render();return}all.splice(i,1);set(K.quotes,all);render()}
-function quotes(){let q=get(K.quotes);return pageHead('Propostas','Histórico dos orçamentos criados.','＋ Nova proposta','newQuote()')+(q.length?q.map((x,i)=>'<article class="proposal"><div><span class="category">'+esc(x.number)+'</span><h3>'+esc(x.client||'Cliente não informado')+'</h3><small>'+esc(x.address||'')+' · '+x.date+' · '+esc(x.status||'Em orçamento')+'</small></div><div class="proposalActions"><strong>'+br(x.total)+'</strong>'+(x.status==='Aprovado'?'<span class="statusPill ok">✓ Aprovado</span>':'<button class="primary" onclick="approveQuote('+i+')">✓ Orçamento aprovado</button>')+'<button class="editbtn" onclick="editQuote('+i+')">Editar</button><button class="editbtn" onclick="printOmniProposal('+i+')">Gerar proposta para escritório</button><button class="editbtn" onclick="exportOmniTemplateProposal('+i+')">Gerar proposta</button><button class="editbtn" onclick="generateOmniContract('+i+')">Gerar contrato</button><button class="ghost" onclick="generateMergedPDF('+i+')">PDFs anexados</button><button class="ghost omniDanger" onclick="deleteOmniQuote('+i+')">Excluir proposta</button></div></article>').reverse().join(''):empty('Nenhuma proposta criada ainda.'))}
+function quotes(){let q=get(K.quotes);return pageHead('Propostas','Histórico dos orçamentos criados.','＋ Nova proposta','newQuote()')+(q.length?q.map((x,i)=>'<article class="proposal"><div><span class="category">'+esc(x.number)+'</span><h3>'+esc(x.client||'Cliente não informado')+'</h3><small>'+esc(x.address||'')+' · '+x.date+' · '+esc(x.status||'Em orçamento')+'</small></div><div class="proposalActions"><strong>'+br(x.total)+'</strong>'+(x.status==='Aprovado'?'<span class="statusPill ok">✓ Aprovado</span>':'<button class="primary" onclick="approveQuote('+i+')">✓ Orçamento aprovado</button>')+'<button class="editbtn" onclick="editQuote('+i+')">Editar</button><button class="editbtn" onclick="exportOmniTemplateProposal('+i+',true)">Gerar proposta para escritório</button><button class="editbtn" onclick="exportOmniTemplateProposal('+i+')">Gerar proposta</button><button class="editbtn" onclick="generateOmniContract('+i+')">Gerar contrato</button><button class="ghost" onclick="generateMergedPDF('+i+')">PDFs anexados</button><button class="ghost omniDanger" onclick="deleteOmniQuote('+i+')">Excluir proposta</button></div></article>').reverse().join(''):empty('Nenhuma proposta criada ainda.'))}
 async function generateOmniContract(i){
 const q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
 const c=get(K.clients).find(x=>x.name===q.client)||{};
@@ -93,7 +93,7 @@ async function generateMergedPDF(i){
  if(!parts.length)return alert('Nenhum PDF foi salvo no Editor de PDFs. Adicione seus arquivos e clique em Salvar arquivos.');
  if(!window.PDFLib)return alert('Não foi possível carregar a biblioteca de PDF.');
  try{let out=await PDFLib.PDFDocument.create();for(let p of parts){let f=await omniCloudPDFRead(p.id);let src=await PDFLib.PDFDocument.load(await f.arrayBuffer());let pages=await out.copyPages(src,src.getPageIndices());pages.forEach(x=>out.addPage(x))}
- let bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download='OmniSpectra_'+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000)
+ let bytes=await out.save(),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download='OmniSpectra_'+(office?'Escritorio_':'')+String(q.number||'proposta').replace(/[^a-zA-Z0-9_-]/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000)
  }catch(e){console.error(e);alert('Erro ao montar PDF: '+e.message)}
 }
 function quoteCards(q){return q.length?q.map((x)=>'<article class="proposal"><div><span class="category">'+esc(x.number)+'</span><h3>'+esc(x.client||'Cliente não informado')+'</h3><small>'+esc(x.address||'')+' · '+x.date+'</small></div><strong>'+br(x.total)+'</strong></article>').join(''):empty('Nenhuma proposta criada ainda.')}
@@ -325,7 +325,7 @@ function omniProposalIllustration(group){
  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 300 300"><rect width="300" height="300" fill="#031224"/><circle cx="150" cy="135" r="111" fill="#09243b" stroke="#1b6094" stroke-width="2"/><g fill="none" stroke="#55b9f1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+motif+'</g><text x="150" y="260" fill="#c9eaff" font-size="14" font-family="Arial" text-anchor="middle">'+group.replace(/&/g,'&amp;')+'</text></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
-async function exportOmniTemplateProposal(i){
+async function exportOmniTemplateProposal(i,office=false){
  if(view==='visual'&&visualQuoteIndex===i)saveOmniVisual(true);
  const q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
  if(!window.PDFLib)return alert('Biblioteca de PDF indisponível.');
@@ -336,8 +336,32 @@ async function exportOmniTemplateProposal(i){
   if(src.getPageCount()!==8)throw Error('O modelo precisa ter 8 páginas.');
   const out=await PDFLib.PDFDocument.create();
   const font=await out.embedFont(PDFLib.StandardFonts.Helvetica),bold=await out.embedFont(PDFLib.StandardFonts.HelveticaBold);
-  const white=PDFLib.rgb(.92,.96,1),blue=PDFLib.rgb(.3,.7,1);
-  const add=async n=>{const [p]=await out.copyPages(src,[n]);out.addPage(p);return p};
+  const white=office?PDFLib.rgb(.08,.16,.24):PDFLib.rgb(.92,.96,1),blue=office?PDFLib.rgb(.04,.39,.62):PDFLib.rgb(.3,.7,1);
+  let officePages=null;
+  if(office){
+   if(!window.pdfjsLib)throw Error('Biblioteca para gerar o modelo claro indisponível. Atualize a página.');
+   const raw=new Uint8Array(await data.arrayBuffer());
+   officePages=await window.pdfjsLib.getDocument({data:raw}).promise;
+  }
+  const add=async n=>{
+   if(!office){const [p]=await out.copyPages(src,[n]);out.addPage(p);return p}
+   const original=src.getPage(n),size=original.getSize(),page=await officePages.getPage(n+1),viewport=page.getViewport({scale:1.6});
+   const canvas=document.createElement('canvas');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+   const ctx=canvas.getContext('2d',{willReadFrequently:true});
+   await page.render({canvasContext:ctx,viewport}).promise;
+   const pixels=ctx.getImageData(0,0,canvas.width,canvas.height),a=pixels.data;
+   for(let z=0;z<a.length;z+=4){
+    const r=a[z],g=a[z+1],b=a[z+2],hi=Math.max(r,g,b),lo=Math.min(r,g,b),sat=hi-lo;
+    // Recolor only flat navy and neutral template artwork; retain colorful photos and blue details.
+    if(r<68&&g<90&&b<125&&b>=r&&b>=g*.82){a[z]=247;a[z+1]=250;a[z+2]=253}
+    else if(hi>190&&sat<38){a[z]=29;a[z+1]=55;a[z+2]=76}
+    else if(hi>105&&sat<32){a[z]=48;a[z+1]=76;a[z+2]=95}
+    else if(b>r*1.35&&b>g*1.12&&b>100){a[z]=Math.max(10,Math.round(r*.48));a[z+1]=Math.max(75,Math.round(g*.72));a[z+2]=Math.max(125,Math.round(b*.85))}
+   }
+   ctx.putImageData(pixels,0,0);
+   const image=await out.embedJpg(await (await fetch(canvas.toDataURL('image/jpeg',.9))).arrayBuffer());
+   const p=out.addPage([size.width,size.height]);p.drawImage(image,{x:0,y:0,width:size.width,height:size.height});return p;
+  };
   const txt=(p,t,x,y,size=11,max=55,col=white,b=false)=>p.drawText(String(t??'').replace(/[^\x20-\x7eÀ-ÿ]/g,' ').slice(0,max),{x,y,size,font:b?bold:font,color:col});
   const wrap=(p,t,x,y,width=55,size=11,step=15,limit=8)=>{
    let words=String(t||'').split(/\s+/),line='',row=0;
@@ -358,7 +382,7 @@ async function exportOmniTemplateProposal(i){
   const photo=x=>{const z=products.find(v=>(x.id&&v.id===x.id)||((v.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(v.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));return x.__photoOverride&&x.photo?x.photo:((z&&z.photo)||x.photo||'')};
   const groups=new Map();
   for(const item of items){const g=omniProposalGroup(item);if(!groups.has(g))groups.set(g,[]);groups.get(g).push(item)}
-  const bg=PDFLib.rgb(.005,.025,.055),panel=PDFLib.rgb(.012,.055,.105),stroke=PDFLib.rgb(.13,.39,.61);
+  const bg=office?PDFLib.rgb(.97,.98,.99):PDFLib.rgb(.005,.025,.055),panel=office?PDFLib.rgb(.94,.97,.99):PDFLib.rgb(.012,.055,.105),stroke=office?PDFLib.rgb(.69,.79,.85):PDFLib.rgb(.13,.39,.61);
   for(const [group,groupItems] of groups){
    for(let k=0;k<Math.ceil(groupItems.length/5);k++){
     const batch=groupItems.slice(k*5,k*5+5);p=await add(4);
