@@ -238,6 +238,23 @@ async function updateOmniPDFTemplateStatus(){
  }catch(e){el.textContent='Erro ao consultar modelo: '+e.message}
 }
 function omniClientVisibleItem(x){let c=(x.category||'').toLowerCase(),n=((x.name||'')+' '+(x.model||'')).toLowerCase();if(x.__auto)return false;if(c.includes('insumo')||c.includes('serviço')||c.includes('servico'))return false;if(/instala[cç][aã]o|configura[cç][aã]o|passagem de cabeamento|cabeamento|m[aã]o de obra/.test(n))return false;return true}
+function omniProposalGroup(x){
+ const s=[x.category,x.name,x.model,x.description].filter(Boolean).join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ if(/camera|cftv|nvr|dvr|gravador|vigilancia|seguranca|intelbras im[0-9]/.test(s))return 'CFTV';
+ if(/roteador|access point|unifi|wi.?fi|wireless|switch|gateway|rede|internet|tp.?link|ubiquiti|rack|patch panel/.test(s))return 'INTERNET E WI-FI';
+ if(/interfone|porteiro|fechadura|controle de acesso/.test(s))return 'PORTEIRO ELETRONICO';
+ if(/audio|video|som|caixa acustica|amplificador|home theater|tv|televis/.test(s))return 'AUDIO E VIDEO';
+ if(/automacao|cortina|cenario|modulo inteligente/.test(s))return 'AUTOMACAO';
+ if(/eletric|disjuntor|tomada|iluminacao|luminaria/.test(s))return 'ELETRICA';
+ if(/painel de led|painel led/.test(s))return 'PAINEL DE LED';
+ return (x.category||'OUTROS EQUIPAMENTOS').toUpperCase();
+}
+function omniProposalIllustration(group){
+ const network=group==='INTERNET E WI-FI',camera=group==='CFTV';
+ const motif=network?'<rect x="83" y="80" width="134" height="68" rx="13"/><path d="M103 170h94M150 148v22M110 109h8m15 0h8m15 0h8"/><path d="M96 61q54-45 108 0M118 76q32-27 64 0"/>':camera?'<path d="M73 113l128-38 20 51-128 38zM198 133l19 20M217 153h24M94 166v27h105"/><circle cx="145" cy="120" r="19"/>':'<rect x="85" y="78" width="130" height="110" rx="15"/><path d="M112 112h76M112 137h76M112 162h50"/>';
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 300 300"><rect width="300" height="300" fill="#031224"/><circle cx="150" cy="135" r="111" fill="#09243b" stroke="#1b6094" stroke-width="2"/><g fill="none" stroke="#55b9f1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+motif+'</g><text x="150" y="260" fill="#c9eaff" font-size="14" font-family="Arial" text-anchor="middle">'+group.replace(/&/g,'&amp;')+'</text></svg>';
+ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
 async function exportOmniTemplateProposal(i){
  if(view==='visual'&&visualQuoteIndex===i)saveOmniVisual(true);
  const q=get(K.quotes)[i];if(!q)return alert('Proposta não encontrada.');
@@ -267,13 +284,23 @@ async function exportOmniTemplateProposal(i){
   if(clientProject)try{await omniEmbedTemplateImage(out,p,clientProject,490,218,210,185)}catch(e){console.warn('Imagem do projeto:',e)}
   await add(2);await add(3);
   const items=(q.items||[]).filter(omniClientVisibleItem);
-  for(let k=0;k<Math.max(1,Math.ceil(items.length/5));k++){
-   p=await add(4);
-   for(let j=0;j<5;j++){
-    const x=items[k*5+j];if(!x)continue;const y=470-j*86;
-    txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),475,y,10.5,36,white,true);
-    wrap(p,x.model||x.description||'',475,y-16,37,8.5,11,2);
-    const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));const livePhoto=x.__photoOverride&&x.photo?x.photo:((liveProduct&&liveProduct.photo)||x.photo);if(livePhoto)try{await omniEmbedTemplateImage(out,p,livePhoto,428,y-30,42,42)}catch(e){console.warn('Foto do item não inserida:',e)}
+  const groups=new Map();
+  for(const item of items){const group=omniProposalGroup(item);if(!groups.has(group))groups.set(group,[]);groups.get(group).push(item)}
+  if(!groups.size)groups.set('EQUIPAMENTOS',[]);
+  for(const [group,groupItems] of groups){
+   for(let k=0;k<Math.max(1,Math.ceil(groupItems.length/5));k++){
+    p=await add(4);
+    // Title and illustration stay inside the existing PDF template's equipment area.
+    txt(p,group,24,496,12,31,blue,true);
+    try{await omniEmbedTemplateImage(out,p,omniProposalIllustration(group),23,76,215,220)}catch(e){console.warn('Ilustração da categoria:',e)}
+    for(let j=0;j<Math.min(5,groupItems.length-k*5);j++){
+     const x=groupItems[k*5+j],y=470-j*86;
+     txt(p,(+x.qty||1)+'x '+(x.name||'Equipamento'),475,y,10.5,36,white,true);
+     wrap(p,x.model||x.description||'',475,y-16,37,8.5,11,2);
+     const liveProduct=get(K.products).find(z=>(x.id&&z.id===x.id)||((z.name||'').trim().toLowerCase()===(x.name||'').trim().toLowerCase()&&(!x.model||(z.model||'').trim().toLowerCase()===(x.model||'').trim().toLowerCase())));
+     const livePhoto=x.__photoOverride&&x.photo?x.photo:((liveProduct&&liveProduct.photo)||x.photo);
+     if(livePhoto)try{await omniEmbedTemplateImage(out,p,livePhoto,428,y-30,42,42)}catch(e){console.warn('Foto do item não inserida:',e)}
+    }
    }
   }
   p=await add(5);wrap(p,q.summary||q.notes||'',50,382,88,14,20,12);
