@@ -410,7 +410,35 @@ async function exportOmniTemplateProposal(i,office=false){
     }
    }
   }
-  p=await add(5);wrap(p,q.summary||q.notes||'',50,382,88,14,20,12);
+  // Keep automatic category sections separate on the proposal PDF.
+  const drawSummary=(page,content)=>{
+   const heads=['REDE E WI-FI','CFTV E SEGURANÇA','INSTALAÇÃO E CONFIGURAÇÃO','AUTOMAÇÃO','ÁUDIO E VÍDEO','CONTROLE DE ACESSO E INTERFONIA','ELÉTRICA E ILUMINAÇÃO','INFRAESTRUTURA E INSUMOS','OUTROS EQUIPAMENTOS','SERVIÇOS'];
+   let raw=String(content||'').replace(/\r/g,'').trim();
+   for(const h of heads){
+    const pos=raw.indexOf(h);
+    if(pos>0&&raw[pos-1]!=='\n')raw=raw.slice(0,pos).trimEnd()+'\n\n'+raw.slice(pos);
+   }
+   const blocks=raw.split('\n'),lines=[];
+   for(const block of blocks){
+    const t=block.trim();
+    if(!t){if(lines.length&&lines[lines.length-1]!==null)lines.push(null);continue}
+    const heading=heads.includes(t),size=heading?12:11.5;
+    let line='';
+    for(const word of t.split(/\s+/)){
+     const next=line?line+' '+word:word;
+     if(line&&font.widthOfTextAtSize(next,size)>600){lines.push({text:line,heading});line=word}else line=next;
+    }
+    if(line)lines.push({text:line,heading});
+   }
+   const total=lines.reduce((n,l)=>n+(l===null?9:l.heading?19:16),0),scale=Math.min(1,300/Math.max(1,total));
+   let y=392;
+   for(const l of lines){
+    if(l===null){y-=9*scale;continue}
+    txt(page,l.text,50,y,(l.heading?12:11.5)*scale,150,l.heading?blue:white,l.heading);
+    y-=(l.heading?19:16)*scale;
+   }
+  };
+  p=await add(5);drawSummary(p,q.summary||q.notes||'');
 
   for(const extra of q.projectPages||[]){
    if(extra.pdfData&&extra.pdfData.length){try{const ext=await PDFLib.PDFDocument.load(new Uint8Array(extra.pdfData));const pages=await out.copyPages(ext,ext.getPageIndices());pages.forEach(pg=>out.addPage(pg));continue}catch(e){console.warn('PDF do projeto:',e)}}
