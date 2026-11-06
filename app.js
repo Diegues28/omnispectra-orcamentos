@@ -221,7 +221,16 @@ function omniCalc(items,f={}){
 function renderFinance(){
  const el=document.getElementById('financeBox');if(!el)return;
  const fields=[['rt','RT (%)',0],['nf','Acréscimo com nota (%)',0],['discount','Desconto comercial',0],['reason','Motivo do desconto',''],['entryPercent','Entrada: custo dos equipamentos + (%)',10],['entry','Entrada manual (opcional)',''],['parts','Parcelas',4],['cashDiscount','Desconto à vista (%)',5]];
- el.innerHTML='<div class="field"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" style="width:auto" '+(quoteFinance.noEntry?'checked':'')+' onchange="quoteFinance.noEntry=this.checked;refreshFinance()"> Sem entrada — dividir o valor total nas parcelas</label></div><div class="two">'+fields.map(([k,label,def])=>'<div class="field"><label>'+label+'</label><input '+(k==='reason'?'type="text"':'type="number" step=".01"')+' value="'+esc(quoteFinance[k]??def)+'" '+((k==='entry'||k==='entryPercent')&&quoteFinance.noEntry?'disabled':'')+' oninput="quoteFinance[\''+k+'\']=this.value;refreshFinance()"></div>').join('')+'</div><div class="field"><label>Tipo de desconto comercial</label><select onchange="quoteFinance.discountMode=this.value;refreshFinance()"><option value="percent" '+(quoteFinance.discountMode!=='fixed'?'selected':'')+'>Percentual (%)</option><option value="fixed" '+(quoteFinance.discountMode==='fixed'?'selected':'')+'>Valor fixo (R$)</option></select></div><div class="linkedBox" id="financePreview"></div>';
+ el.innerHTML='<div class="field"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" style="width:auto" '+(quoteFinance.noEntry?'checked':'')+' onchange="quoteFinance.noEntry=this.checked;renderFinance()"> Sem entrada — dividir o valor total nas parcelas</label></div><div class="two">'+fields.map(([k,label,def])=>'<div class="field"><label>'+label+'</label><input '+(k==='reason'?'type="text"':'type="number" step=".01"')+' value="'+esc(quoteFinance[k]??def)+'" '+(k==='entry'?'data-finance-entry="1"':'') '+((k==='entry'||k==='entryPercent')&&quoteFinance.noEntry?'disabled':'')+' oninput="omniFinanceFieldChanged(\''+k+'\',this.value)"></div>').join('')+'</div><div class="field"><label>Tipo de desconto comercial</label><select onchange="quoteFinance.discountMode=this.value;refreshFinance()"><option value="percent" '+(quoteFinance.discountMode!=='fixed'?'selected':'')+'>Percentual (%)</option><option value="fixed" '+(quoteFinance.discountMode==='fixed'?'selected':'')+'>Valor fixo (R$)</option></select></div><div class="linkedBox" id="financePreview"></div>';
+ refreshFinance();
+}
+function omniFinanceFieldChanged(key,value){
+ quoteFinance[key]=value;
+ if(key==='entryPercent' && quoteFinance.entry!==undefined && quoteFinance.entry!==''){
+  quoteFinance.entry='';
+  const manual=document.querySelector('#financeBox input[data-finance-entry]');
+  if(manual)manual.value='';
+ }
  refreshFinance();
 }
 function refreshFinance(){
